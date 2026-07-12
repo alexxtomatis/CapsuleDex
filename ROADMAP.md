@@ -38,7 +38,15 @@
   - Conteggio e svuotamento della lista
   - Salvataggio locale automatico
 
-- [ ] **Fase 6 — Collezione personale**
+- [x] **Fase 6 — Collezione personale**
+  - Registrazione dei Pokémon catturati
+  - Categorie Shiny, Alpha, Gigamax, Paradox e Leggendario
+  - Aggiunta da ricerca, Pokédex e scheda Pokémon
+  - Riepilogo e avanzamento sul Pokédex nazionale
+  - Ricerca, filtri e ordinamento
+  - Rimozione singola e svuotamento completo
+  - Salvataggio locale automatico
+
 - [ ] **Fase 7 — Calcolatore tipi**
 - [ ] **Fase 8 — Confronto Pokémon**
 - [ ] **Fase 9 — Database mosse**

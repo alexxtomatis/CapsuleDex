@@ -1,6 +1,7 @@
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AppHeader } from './components/AppHeader'
 import { BottomNav } from './components/BottomNav'
+import { CollectionView } from './components/CollectionView'
 import { FavoritesView } from './components/FavoritesView'
 import { FeatureCard } from './components/FeatureCard'
 import { SearchIcon } from './components/Icon'
@@ -9,18 +10,19 @@ import { PokemonDetailView } from './components/PokemonDetailView'
 import { TeamView } from './components/TeamView'
 import { Toast } from './components/Toast'
 import { features, regions } from './data/features'
+import { loadCollection, saveCollection } from './services/collectionStorage'
 import { loadFavorites, saveFavorites } from './services/favoriteStorage'
 import { createTeamId, loadActiveTeamId, loadTeams, saveActiveTeamId, saveTeams } from './services/teamStorage'
-import type { FavoriteEntry, Feature, PokemonTeam } from './types'
+import type { CollectionEntry, CollectionTrait, FavoriteEntry, Feature, PokemonTeam } from './types'
 
 const phaseLabels: Record<number, string> = {
-  6: 'Collezione e zone',
+  6: 'Collezione personale',
   9: 'Database mosse',
   10: 'Database strumenti',
   11: 'Database abilità',
 }
 
-type Screen = 'home' | 'pokedex' | 'detail' | 'team' | 'favorites'
+type Screen = 'home' | 'pokedex' | 'detail' | 'team' | 'favorites' | 'collection'
 type DetailReturnScreen = Exclude<Screen, 'detail'>
 
 function App() {
@@ -35,14 +37,18 @@ function App() {
   const [toast, setToast] = useState('')
   const toastTimer = useRef<number | null>(null)
 
+  const [collection, setCollection] = useState<CollectionEntry[]>(() => loadCollection())
   const [favorites, setFavorites] = useState<FavoriteEntry[]>(() => loadFavorites())
   const [teams, setTeams] = useState<PokemonTeam[]>(() => loadTeams())
   const [activeTeamId, setActiveTeamId] = useState(() => loadActiveTeamId(loadTeams()))
 
+  useEffect(() => saveCollection(collection), [collection])
   useEffect(() => saveFavorites(favorites), [favorites])
   useEffect(() => saveTeams(teams), [teams])
   useEffect(() => saveActiveTeamId(activeTeamId), [activeTeamId])
 
+  const collectionMap = useMemo(() => new Map(collection.map((entry) => [entry.pokemonId, entry])), [collection])
+  const collectionIds = useMemo(() => new Set(collection.map((entry) => entry.pokemonId)), [collection])
   const favoriteIds = useMemo(() => new Set(favorites.map((favorite) => favorite.pokemonId)), [favorites])
 
   const activeTeam = useMemo(
@@ -80,6 +86,12 @@ function App() {
     goToTop()
   }
 
+  function openCollection() {
+    setActiveNav('collection')
+    setScreen('collection')
+    goToTop()
+  }
+
   function openPokemon(id: number, returnScreen?: DetailReturnScreen) {
     setSelectedPokemonId(id)
     if (returnScreen) setDetailReturnScreen(returnScreen)
@@ -106,6 +118,10 @@ function App() {
       openFavorites()
       return
     }
+    if (feature.id === 'collection') {
+      openCollection()
+      return
+    }
     const label = phaseLabels[feature.phase] ?? feature.title
     showToast(`${label}: prevista nella Fase ${feature.phase}.`)
   }
@@ -125,7 +141,65 @@ function App() {
       openFavorites()
       return
     }
+    if (id === 'collection') {
+      openCollection()
+      return
+    }
     showToast(`${label} sarà attivato in una fase successiva.`)
+  }
+
+  function addPokemonToCollection(pokemonId: number, pokemonName?: string) {
+    if (collectionMap.has(pokemonId)) {
+      showToast(`${pokemonName ?? 'Pokémon'} è già nella collezione.`)
+      return
+    }
+    const now = Date.now()
+    setCollection((current) => [
+      { pokemonId, traits: [], addedAt: now, updatedAt: now },
+      ...current.filter((entry) => entry.pokemonId !== pokemonId),
+    ])
+    showToast(`${pokemonName ?? 'Pokémon'} segnato come catturato.`)
+  }
+
+  function removePokemonFromCollection(pokemonId: number, pokemonName?: string) {
+    setCollection((current) => current.filter((entry) => entry.pokemonId !== pokemonId))
+    showToast(`${pokemonName ?? 'Pokémon'} rimosso dalla collezione.`)
+  }
+
+  function toggleCollectionTrait(pokemonId: number, trait: CollectionTrait, pokemonName?: string) {
+    const currentEntry = collectionMap.get(pokemonId)
+    if (!currentEntry) {
+      const now = Date.now()
+      setCollection((current) => [{ pokemonId, traits: [trait], addedAt: now, updatedAt: now }, ...current])
+      showToast(`${pokemonName ?? 'Pokémon'} aggiunto alla collezione.`)
+      return
+    }
+
+    const hasTrait = currentEntry.traits.includes(trait)
+    setCollection((current) => current.map((entry) => {
+      if (entry.pokemonId !== pokemonId) return entry
+      return {
+        ...entry,
+        traits: hasTrait ? entry.traits.filter((value) => value !== trait) : [...entry.traits, trait],
+        updatedAt: Date.now(),
+      }
+    }))
+    const labels: Record<CollectionTrait, string> = {
+      shiny: 'Shiny',
+      alpha: 'Alpha',
+      gigantamax: 'Gigamax',
+      paradox: 'Paradox',
+      legendary: 'Leggendario',
+    }
+    showToast(`${labels[trait]} ${hasTrait ? 'rimosso da' : 'aggiunto a'} ${pokemonName ?? 'questo Pokémon'}.`)
+  }
+
+  function clearCollection() {
+    if (collection.length === 0) return
+    const confirmed = window.confirm(`Rimuovere tutti i ${collection.length} Pokémon dalla collezione?`)
+    if (!confirmed) return
+    setCollection([])
+    showToast('Collezione svuotata.')
   }
 
   function toggleFavorite(pokemonId: number, pokemonName?: string) {
@@ -271,7 +345,7 @@ function App() {
                     </p>
                     <h2 id="explore-title">Esplora CapsuleDex</h2>
                   </div>
-                  <span className="progress-chip">5 / 14</span>
+                  <span className="progress-chip">6 / 14</span>
                 </div>
 
                 <div className="feature-grid">
@@ -286,15 +360,15 @@ function App() {
                   <h2 id="highlight-title">In evidenza</h2>
                   <button type="button" onClick={() => showToast('La roadmap è inclusa nel file ROADMAP.md.')}>Roadmap</button>
                 </div>
-                <article className="highlight-card highlight-card--favorites">
-                  <div className="highlight-badge">FASE 5</div>
+                <article className="highlight-card highlight-card--collection">
+                  <div className="highlight-badge">FASE 6</div>
                   <div>
                     <p>Nuova funzione disponibile</p>
-                    <h3>Preferiti</h3>
-                    <span>Salva i Pokémon che ami, cercali e ordinali nella tua raccolta personale.</span>
+                    <h3>Collezione personale</h3>
+                    <span>Registra le catture e contrassegna Shiny, Alpha, Gigamax, Paradox e Leggendari.</span>
                   </div>
-                  <div className="completion-ring completion-ring--phase-five" aria-label="Fase 5 completata">
-                    <strong>5/14</strong>
+                  <div className="completion-ring completion-ring--phase-six" aria-label="Fase 6 completata">
+                    <strong>6/14</strong>
                   </div>
                 </article>
               </section>
@@ -319,6 +393,8 @@ function App() {
               onToast={showToast}
               favoriteIds={favoriteIds}
               onToggleFavorite={toggleFavorite}
+              collectionIds={collectionIds}
+              onAddToCollection={addPokemonToCollection}
             />
           )}
 
@@ -334,6 +410,23 @@ function App() {
               onOpenPokemon={(id) => openPokemon(id, 'favorites')}
               onToggleFavorite={toggleFavorite}
               onClearFavorites={clearFavorites}
+              onToast={showToast}
+            />
+          )}
+
+          {screen === 'collection' && (
+            <CollectionView
+              entries={collection}
+              onBack={() => {
+                setScreen('home')
+                setActiveNav('home')
+                goToTop()
+              }}
+              onOpenPokemon={(id) => openPokemon(id, 'collection')}
+              onAddPokemon={addPokemonToCollection}
+              onRemovePokemon={removePokemonFromCollection}
+              onToggleTrait={toggleCollectionTrait}
+              onClear={clearCollection}
               onToast={showToast}
             />
           )}
@@ -363,7 +456,7 @@ function App() {
               pokemonId={selectedPokemonId}
               onBack={() => {
                 setScreen(detailReturnScreen)
-                setActiveNav(detailReturnScreen === 'team' ? 'team' : detailReturnScreen === 'favorites' ? 'favorites' : 'home')
+                setActiveNav(detailReturnScreen === 'team' ? 'team' : detailReturnScreen === 'favorites' ? 'favorites' : detailReturnScreen === 'collection' ? 'collection' : 'home')
                 goToTop()
               }}
               onOpenPokemon={(id) => openPokemon(id)}
@@ -374,6 +467,10 @@ function App() {
               onOpenTeam={openTeam}
               isFavorite={favoriteIds.has(selectedPokemonId)}
               onToggleFavorite={(name) => toggleFavorite(selectedPokemonId, name)}
+              collectionEntry={collectionMap.get(selectedPokemonId)}
+              onAddToCollection={(name) => addPokemonToCollection(selectedPokemonId, name)}
+              onOpenCollection={openCollection}
+              onToggleCollectionTrait={(trait, name) => toggleCollectionTrait(selectedPokemonId, trait, name)}
             />
           )}
         </div>

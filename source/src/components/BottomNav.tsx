@@ -1,10 +1,10 @@
-import { GridIcon, HeartIcon, MoreIcon, ScanIcon, UsersIcon } from './Icon'
+import { CollectionIcon, GridIcon, HeartIcon, MoreIcon, UsersIcon } from './Icon'
 
 const entries = [
   { id: 'home', label: 'Esplora', icon: <GridIcon /> },
   { id: 'favorites', label: 'Preferiti', icon: <HeartIcon /> },
   { id: 'team', label: 'Squadra', icon: <UsersIcon /> },
-  { id: 'scanner', label: 'Scanner', icon: <ScanIcon /> },
+  { id: 'collection', label: 'Collezione', icon: <CollectionIcon /> },
   { id: 'more', label: 'Altro', icon: <MoreIcon /> },
 ]
 

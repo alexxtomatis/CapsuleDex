@@ -82,6 +82,17 @@ export function CheckIcon() {
   )
 }
 
+
+export function CollectionIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M5 7.5 12 4l7 3.5v9L12 20l-7-3.5v-9Z" />
+      <path d="m5 7.5 7 3.5 7-3.5M12 11v9" />
+      <circle cx="12" cy="11" r="2.2" />
+    </svg>
+  )
+}
+
 export function ScanIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">

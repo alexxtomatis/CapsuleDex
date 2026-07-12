@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { italianTypeNames } from '../data/features'
 import type { PokemonCardData } from '../types'
-import { HeartIcon } from './Icon'
+import { CollectionIcon, HeartIcon } from './Icon'
 
 const padId = (id: number) => `N°${String(id).padStart(4, '0')}`
 
@@ -10,9 +10,11 @@ type PokemonCardProps = {
   onOpen: (pokemon: PokemonCardData) => void
   isFavorite?: boolean
   onToggleFavorite?: (pokemon: PokemonCardData) => void
+  isCollected?: boolean
+  onToggleCollection?: (pokemon: PokemonCardData) => void
 }
 
-export function PokemonCard({ pokemon, onOpen, isFavorite = false, onToggleFavorite }: PokemonCardProps) {
+export function PokemonCard({ pokemon, onOpen, isFavorite = false, onToggleFavorite, isCollected = false, onToggleCollection }: PokemonCardProps) {
   const [imageFailed, setImageFailed] = useState(false)
   const mainType = pokemon.types[0] ?? 'normal'
 
@@ -54,6 +56,18 @@ export function PokemonCard({ pokemon, onOpen, isFavorite = false, onToggleFavor
           aria-pressed={isFavorite}
         >
           <HeartIcon />
+        </button>
+      )}
+
+      {onToggleCollection && (
+        <button
+          type="button"
+          className={`pokemon-card__collection${isCollected ? ' is-collected' : ''}`}
+          onClick={() => onToggleCollection(pokemon)}
+          aria-label={isCollected ? `${pokemon.name} è nella collezione` : `Segna ${pokemon.name} come catturato`}
+          aria-pressed={isCollected}
+        >
+          <CollectionIcon />
         </button>
       )}
     </article>

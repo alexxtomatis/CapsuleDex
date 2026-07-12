@@ -90,3 +90,13 @@ export type FavoriteEntry = {
   pokemonId: number
   addedAt: number
 }
+
+
+export type CollectionTrait = 'shiny' | 'alpha' | 'gigantamax' | 'paradox' | 'legendary'
+
+export type CollectionEntry = {
+  pokemonId: number
+  traits: CollectionTrait[]
+  addedAt: number
+  updatedAt: number
+}

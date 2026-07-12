@@ -1,28 +1,34 @@
 # Changelog
 
-## 0.5.0 — Fase 5
+## 0.6.0 — Fase 6
 
 ### Aggiunto
 
-- Gestione completa dei Pokémon preferiti
-- Pulsante a cuore nelle carte del Pokédex
-- Pulsante preferiti nella scheda dettagliata
-- Schermata Preferiti nella navigazione principale
-- Ricerca tra i Pokémon salvati
-- Ordinamento per recenti, numero e nome
-- Conteggio dinamico dei preferiti
-- Rimozione singola e svuotamento completo della lista
-- Conferma prima della cancellazione totale
-- Salvataggio automatico nel browser
-- Stato vuoto con collegamento al Pokédex
+- Collezione personale dei Pokémon catturati
+- Schermata Collezione nella navigazione principale
+- Ricerca per nome o numero per registrare nuove catture
+- Aggiunta rapida dal Pokédex e dalle schede dettagliate
+- Categorie Shiny, Alpha, Gigamax, Paradox e Leggendario
+- Dashboard con avanzamento nazionale e conteggi speciali
+- Ricerca, filtri e ordinamento della collezione
+- Rimozione singola e cancellazione completa con conferma
+- Salvataggio automatico della collezione nel browser
 
 ### Modificato
 
-- Carte Pokémon adattate per supportare due azioni separate
-- Home aggiornata alla Fase 5
-- Carta Preferiti resa operativa
-- Navigazione e schede Pokémon sincronizzate con lo stato dei preferiti
-- Versione del progetto aggiornata a `0.5.0`
+- Home aggiornata alla Fase 6
+- Carta Collezione resa operativa
+- Barra inferiore aggiornata con accesso diretto alla Collezione
+- Schede Pokémon integrate con stato di cattura e categorie speciali
+- Carte del Pokédex integrate con il comando di cattura rapida
+- Versione del progetto aggiornata a `0.6.0`
+
+## 0.5.0 — Fase 5
+
+- Gestione completa dei Pokémon preferiti
+- Ricerca e ordinamento dei preferiti
+- Sincronizzazione dei cuori tra Pokédex, schede e Preferiti
+- Salvataggio automatico nel browser
 
 ## 0.4.0 — Fase 4
 

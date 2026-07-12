@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { italianTypeNames } from '../data/features'
 import { getPokemonDetail } from '../services/pokeapi'
-import type { PokemonDetailData, PokemonStat } from '../types'
-import { ArrowLeftIcon, ChartIcon, EvolutionIcon, HeartIcon, IconButton, InfoIcon, StarIcon, UsersIcon } from './Icon'
+import type { CollectionEntry, CollectionTrait, PokemonDetailData, PokemonStat } from '../types'
+import { ArrowLeftIcon, ChartIcon, CollectionIcon, EvolutionIcon, HeartIcon, IconButton, InfoIcon, StarIcon, UsersIcon } from './Icon'
 
 const padId = (id: number) => `N°${String(id).padStart(4, '0')}`
 
@@ -55,9 +55,13 @@ type DetailProps = {
   onOpenTeam: () => void
   isFavorite: boolean
   onToggleFavorite: (name?: string) => void
+  collectionEntry?: CollectionEntry
+  onAddToCollection: (name?: string) => void
+  onOpenCollection: () => void
+  onToggleCollectionTrait: (trait: CollectionTrait, name?: string) => void
 }
 
-export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, isInTeam, isTeamFull, onAddToTeam, onOpenTeam, isFavorite, onToggleFavorite }: DetailProps) {
+export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, isInTeam, isTeamFull, onAddToTeam, onOpenTeam, isFavorite, onToggleFavorite, collectionEntry, onAddToCollection, onOpenCollection, onToggleCollectionTrait }: DetailProps) {
   const [pokemon, setPokemon] = useState<PokemonDetailData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -209,6 +213,43 @@ export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, i
           </span>
           <b>{isFavorite ? '✓' : '+'}</b>
         </button>
+      </div>
+
+      <div className="detail-collection-action">
+        <button
+          type="button"
+          className={collectionEntry ? 'is-collected' : ''}
+          onClick={collectionEntry ? onOpenCollection : () => onAddToCollection(displayName)}
+        >
+          <CollectionIcon />
+          <span>
+            <strong>{collectionEntry ? 'Pokémon catturato' : 'Segna come catturato'}</strong>
+            <small>{collectionEntry ? 'Apri la collezione personale' : 'Aggiungilo al tuo archivio'}</small>
+          </span>
+          <b>{collectionEntry ? '→' : '+'}</b>
+        </button>
+
+        {collectionEntry && (
+          <div className="detail-collection-traits" aria-label="Categorie della collezione">
+            {([
+              ['shiny', '✦', 'Shiny'],
+              ['alpha', 'Α', 'Alpha'],
+              ['gigantamax', 'G', 'Gigamax'],
+              ['paradox', '∞', 'Paradox'],
+              ['legendary', '★', 'Leggendario'],
+            ] as Array<[CollectionTrait, string, string]>).map(([trait, symbol, label]) => (
+              <button
+                type="button"
+                key={trait}
+                className={collectionEntry.traits.includes(trait) ? 'is-active' : ''}
+                onClick={() => onToggleCollectionTrait(trait, displayName)}
+                aria-pressed={collectionEntry.traits.includes(trait)}
+              >
+                <span>{symbol}</span><small>{label}</small>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="detail-team-action">

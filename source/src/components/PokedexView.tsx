@@ -15,13 +15,15 @@ type PokedexViewProps = {
   onToast: (message: string) => void
   favoriteIds: Set<number>
   onToggleFavorite: (id: number, name?: string) => void
+  collectionIds: Set<number>
+  onAddToCollection: (id: number, name?: string) => void
 }
 
 function normalize(value: string) {
   return value.trim().toLowerCase().replace(/\s+/g, '-')
 }
 
-export function PokedexView({ initialQuery, initialRegion, onBack, onOpenPokemon, onToast, favoriteIds, onToggleFavorite }: PokedexViewProps) {
+export function PokedexView({ initialQuery, initialRegion, onBack, onOpenPokemon, onToast, favoriteIds, onToggleFavorite, collectionIds, onAddToCollection }: PokedexViewProps) {
   const [catalog, setCatalog] = useState<PokemonCatalogItem[]>([])
   const [query, setQuery] = useState(initialQuery)
   const [regionId, setRegionId] = useState(initialRegion)
@@ -260,6 +262,10 @@ export function PokedexView({ initialQuery, initialRegion, onBack, onOpenPokemon
                       onOpen={openPokemon}
                       isFavorite={favoriteIds.has(pokemon.id)}
                       onToggleFavorite={() => onToggleFavorite(pokemon.id, pokemon.name)}
+                      isCollected={collectionIds.has(pokemon.id)}
+                      onToggleCollection={() => collectionIds.has(pokemon.id)
+                        ? onToast(`${pokemon.name} è già nella collezione.`)
+                        : onAddToCollection(pokemon.id, pokemon.name)}
                     />
                   ))
                 : Array.from({ length: Math.min(8, visibleIds.length) }, (_, index) => <PokemonCardSkeleton key={index} />)}

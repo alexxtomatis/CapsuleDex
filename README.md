@@ -1,30 +1,29 @@
-# CapsuleDex — Fase 5
+# CapsuleDex — Fase 6
 
 Questa cartella contiene la versione **già compilata** di CapsuleDex, pronta per GitHub Pages. Il progetto React + TypeScript modificabile è incluso nella cartella `source/`.
 
-## Novità della Fase 5 — Preferiti
+## Novità della Fase 6 — Collezione personale
 
-- Pulsante a cuore nelle carte del Pokédex
-- Aggiunta e rimozione dei preferiti dalle schede Pokémon
-- Schermata **Preferiti** accessibile dalla barra inferiore e dalla Home
-- Ricerca per nome o numero tra i Pokémon salvati
-- Ordinamento per aggiunta recente, numero Pokédex o nome
-- Conteggio aggiornato dei Pokémon preferiti
-- Rimozione rapida di un singolo Pokémon
-- Comando per svuotare l’intera lista con richiesta di conferma
-- Stato vuoto con collegamento diretto al Pokédex
-- Salvataggio automatico tramite `localStorage`
-- Aggiornamento immediato dei cuori in tutte le schermate
+- Schermata **Collezione** accessibile dalla Home e dalla barra inferiore
+- Registrazione dei Pokémon catturati per nome o numero
+- Aggiunta rapida anche dal Pokédex e dalla scheda dettagliata
+- Categorie personalizzabili: **Shiny, Alpha, Gigamax, Paradox e Leggendario**
+- Riepilogo con totale catturati, percentuale del Pokédex nazionale e conteggi speciali
+- Ricerca interna e filtri per categoria
+- Ordinamento per modifica recente, numero Pokédex o nome
+- Apertura diretta della scheda Pokémon dalla collezione
+- Rimozione singola e svuotamento completo con conferma
+- Salvataggio automatico nel browser tramite `localStorage`
 
-Tutte le funzioni delle Fasi 1–4 restano disponibili: Home, Pokédex, ricerca, filtri, schede dettagliate, shiny, statistiche, abilità, evoluzioni, varianti e Team Builder.
+Tutte le funzioni delle Fasi 1–5 restano disponibili: Home, Pokédex, ricerca, filtri, schede dettagliate, shiny, statistiche, abilità, evoluzioni, varianti, Team Builder e Preferiti.
 
 ## Aggiornamento su GitHub
 
 1. Scarica ed estrai lo ZIP.
-2. Apri la cartella `CapsuleDex-Fase-5`.
+2. Apri la cartella `CapsuleDex-Fase-6`.
 3. Carica **tutto il contenuto interno** nella radice del repository `CapsuleDex`.
-4. Su GitHub sostituisci i file esistenti, soprattutto `index.html`, `manifest.webmanifest` e la cartella `assets`.
-5. Elimina dal repository i vecchi file JavaScript e CSS con nomi differenti presenti in `assets`, oppure usa l’opzione di sincronizzazione del tuo client Git.
+4. Sostituisci i file esistenti, soprattutto `index.html`, `manifest.webmanifest` e la cartella `assets`.
+5. Elimina dalla cartella `assets` del repository i vecchi file `index-*.js` e `index-*.css` che non sono presenti in questo pacchetto.
 6. Premi **Commit changes**.
 7. Lascia GitHub Pages impostato su:
    - Source: `Deploy from a branch`
@@ -34,7 +33,7 @@ Tutte le funzioni delle Fasi 1–4 restano disponibili: Home, Pokédex, ricerca,
 
 `https://alexxtomatis.github.io/CapsuleDex/`
 
-Se Safari mostra ancora la versione precedente, chiudi la scheda, riaprila e ricarica la pagina. In caso di cache persistente, elimina i dati del sito per `alexxtomatis.github.io`.
+Se Safari mostra la versione precedente, chiudi la scheda, riaprila e ricarica la pagina. In caso di cache persistente, elimina i dati del sito per `alexxtomatis.github.io`.
 
 ## File principali
 
@@ -62,7 +61,7 @@ npm run build
 
 ## Salvataggio locale
 
-Preferiti e squadre vengono salvati nel browser tramite `localStorage`. Non sono ancora sincronizzati tra dispositivi o account diversi. La cancellazione dei dati del sito elimina anche i contenuti salvati.
+Collezione, preferiti e squadre vengono salvati nel browser tramite `localStorage`. Non sono sincronizzati tra dispositivi o account diversi. La cancellazione dei dati del sito elimina anche i contenuti salvati.
 
 ## Dati e note legali
 
