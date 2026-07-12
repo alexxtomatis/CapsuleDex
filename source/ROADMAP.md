@@ -66,7 +66,15 @@
   - Anteprima delle mosse apprendibili
   - Punteggio comparativo ed evidenziazione dei vantaggi
   - Collegamento diretto dalle schede Pokémon
-- [ ] **Fase 9 — Database mosse**
+- [x] **Fase 9 — Database mosse**
+  - Archivio locale con nomi italiani e inglesi
+  - Ricerca per nome, identificatore e numero
+  - Filtri per tipo, categoria e generazione
+  - Ordinamento per numero, nome, potenza, precisione e PP
+  - Schede con potenza, precisione, PP, tipo e categoria
+  - Effetti avanzati, priorità, stato e modifiche statistiche
+  - Elenco dei Pokémon compatibili
+  - Collegamento diretto dalle schede Pokémon
 - [ ] **Fase 10 — Database strumenti**
 - [ ] **Fase 11 — Database abilità**
 - [ ] **Fase 12 — Evoluzioni avanzate**

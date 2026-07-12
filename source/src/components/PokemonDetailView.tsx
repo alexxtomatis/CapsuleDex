@@ -60,10 +60,11 @@ type DetailProps = {
   onOpenCollection: () => void
   onOpenTypeCalculator: () => void
   onOpenBattle: () => void
+  onOpenMove: (moveSlug: string) => void
   onToggleCollectionTrait: (trait: CollectionTrait, name?: string) => void
 }
 
-export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, isInTeam, isTeamFull, onAddToTeam, onOpenTeam, isFavorite, onToggleFavorite, collectionEntry, onAddToCollection, onOpenCollection, onOpenTypeCalculator, onOpenBattle, onToggleCollectionTrait }: DetailProps) {
+export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, isInTeam, isTeamFull, onAddToTeam, onOpenTeam, isFavorite, onToggleFavorite, collectionEntry, onAddToCollection, onOpenCollection, onOpenTypeCalculator, onOpenBattle, onOpenMove, onToggleCollectionTrait }: DetailProps) {
   const [pokemon, setPokemon] = useState<PokemonDetailData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -144,6 +145,14 @@ export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, i
 
   const mainType = pokemon.types[0] ?? 'normal'
   const displayName = pokemon.italianName || pokemon.name
+  const featuredMoves = [...pokemon.moves]
+    .sort((a, b) => {
+      const methodOrder: Record<string, number> = { 'level-up': 0, machine: 1, tutor: 2, egg: 3 }
+      return (methodOrder[a.method] ?? 9) - (methodOrder[b.method] ?? 9)
+        || (a.method === 'level-up' ? b.level - a.level : 0)
+        || a.name.localeCompare(b.name, 'it')
+    })
+    .slice(0, 18)
 
   return (
     <div className={`detail-view detail-theme--${mainType}`}>
@@ -365,6 +374,27 @@ export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, i
           </div>
           <StatRadar stats={pokemon.stats} />
         </div>
+      </section>
+
+      <section className="detail-section detail-moves-section" aria-labelledby="pokemon-moves-title">
+        <div className="detail-section__heading">
+          <div>
+            <p className="eyebrow">Repertorio di lotta</p>
+            <h2 id="pokemon-moves-title">Mosse apprendibili</h2>
+          </div>
+          <span>{pokemon.moves.length}</span>
+        </div>
+        <p className="detail-moves-intro">Apri una mossa per consultarne potenza, precisione, PP, tipo ed effetto completo.</p>
+        <div className="detail-move-list">
+          {featuredMoves.map((move) => (
+            <button type="button" key={`${move.id}-${move.method}-${move.level}`} onClick={() => onOpenMove(move.id)}>
+              <span>⚡</span>
+              <div><strong>{move.name}</strong><small>{move.method === 'level-up' ? `Livello${move.level > 0 ? ` ${move.level}` : ''}` : move.method === 'machine' ? 'MT' : move.method === 'egg' ? 'Uovo' : move.method === 'tutor' ? 'Tutor' : move.method.replace(/-/g, ' ')}</small></div>
+              <b>→</b>
+            </button>
+          ))}
+        </div>
+        {pokemon.moves.length > featuredMoves.length && <p className="detail-moves-more">Mostrate {featuredMoves.length} di {pokemon.moves.length} mosse disponibili.</p>}
       </section>
 
       <section className="detail-section evolution-section" id="detail-evolution" aria-labelledby="evolution-title">

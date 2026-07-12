@@ -1,6 +1,9 @@
 import { statLabels } from '../data/features'
+import { moveById } from '../data/moveIndex'
 import type {
   EvolutionPath,
+  MoveDetailData,
+  MovePokemonPreview,
   EvolutionStep,
   PokemonAbility,
   PokemonCardData,
@@ -436,5 +439,194 @@ export async function getPokemonDetail(id: number, signal?: AbortSignal): Promis
 
   fullDetailCache.set(id, detail)
   detailCache.set(id, { id: detail.id, name: detail.italianName, image: detail.image, types: detail.types })
+  return detail
+}
+
+type MoveApiResponse = {
+  id: number
+  name: string
+  accuracy: number | null
+  effect_chance: number | null
+  pp: number | null
+  priority: number
+  power: number | null
+  damage_class: { name: 'physical' | 'special' | 'status' }
+  effect_entries: Array<{
+    effect: string
+    short_effect: string
+    language: { name: string }
+  }>
+  flavor_text_entries: Array<{
+    flavor_text: string
+    language: { name: string }
+    version_group: { name: string }
+  }>
+  generation: { name: string; url: string }
+  meta: {
+    ailment: { name: string }
+    category: { name: string }
+    min_hits: number | null
+    max_hits: number | null
+    min_turns: number | null
+    max_turns: number | null
+    drain: number
+    healing: number
+    crit_rate: number
+    ailment_chance: number
+    flinch_chance: number
+    stat_chance: number
+  } | null
+  names: Array<{ name: string; language: { name: string } }>
+  stat_changes: Array<{ change: number; stat: { name: string } }>
+  target: { name: string }
+  type: { name: string }
+  learned_by_pokemon: Array<{ name: string; url: string }>
+}
+
+const moveDetailCache = new Map<number, MoveDetailData>()
+
+const moveTargetNames: Record<string, string> = {
+  'specific-move': 'Una mossa specifica',
+  'selected-pokemon-me-first': 'Pokémon selezionato',
+  'ally': 'Un alleato',
+  'users-field': 'Campo dell’utilizzatore',
+  user: 'Utilizzatore',
+  'opponents-field': 'Campo avversario',
+  'selected-pokemon': 'Pokémon selezionato',
+  'all-opponents': 'Tutti gli avversari',
+  'entire-field': 'Intero campo',
+  'user-and-allies': 'Utilizzatore e alleati',
+  'all-other-pokemon': 'Tutti gli altri Pokémon',
+  'all-allies': 'Tutti gli alleati',
+  'fainting-pokemon': 'Pokémon esausto',
+}
+
+const moveAilmentNames: Record<string, string> = {
+  none: 'Nessuno',
+  paralysis: 'Paralisi',
+  sleep: 'Sonno',
+  freeze: 'Congelamento',
+  burn: 'Scottatura',
+  poison: 'Avvelenamento',
+  confusion: 'Confusione',
+  infatuation: 'Infatuazione',
+  trap: 'Intrappolamento',
+  nightmare: 'Incubo',
+  torment: 'Attaccabrighe',
+  disable: 'Inibizione',
+  yawn: 'Sbadiglio',
+  'heal-block': 'Anticura',
+  'no-type-immunity': 'Rimozione immunità',
+  'leech-seed': 'Parassiseme',
+  embargo: 'Divieto',
+  'perish-song': 'Ultimocanto',
+  ingrain: 'Radicamento',
+  silence: 'Silenzio',
+}
+
+const moveCategoryNames: Record<string, string> = {
+  damage: 'Danno diretto',
+  ailment: 'Problema di stato',
+  'net-good-stats': 'Modifica statistiche',
+  heal: 'Recupero',
+  'damage+ailment': 'Danno e stato',
+  swagger: 'Confusione e statistiche',
+  'damage+lower': 'Danno e riduzione statistiche',
+  'damage+raise': 'Danno e aumento statistiche',
+  'damage+heal': 'Danno e recupero',
+  ohko: 'KO in un colpo',
+  'whole-field-effect': 'Effetto sul campo',
+  'field-effect': 'Effetto di campo',
+  'force-switch': 'Cambio forzato',
+  unique: 'Effetto unico',
+}
+
+const statNamesIt: Record<string, string> = {
+  attack: 'Attacco',
+  defense: 'Difesa',
+  'special-attack': 'Attacco Speciale',
+  'special-defense': 'Difesa Speciale',
+  speed: 'Velocità',
+  accuracy: 'Precisione',
+  evasion: 'Elusione',
+}
+
+function replaceEffectChance(value: string, chance: number | null): string {
+  const replacement = chance === null ? 'una certa probabilità' : `${chance}%`
+  return cleanText(value.replace(/\$effect_chance/g, replacement).replace(/\[[^\]]+\]\{[^}]+\}/g, (match) => {
+    const label = match.match(/^\[([^\]]+)\]/)?.[1]
+    return label ?? match
+  }))
+}
+
+export async function getMoveDetail(id: number, signal?: AbortSignal): Promise<MoveDetailData> {
+  const cached = moveDetailCache.get(id)
+  if (cached) return cached
+
+  const payload = await fetchJson<MoveApiResponse>(`${API_BASE}/move/${id}`, signal)
+  const indexEntry = moveById.get(payload.id)
+  const generationId = extractId(payload.generation.url)
+  const italianFlavor = [...payload.flavor_text_entries]
+    .reverse()
+    .find((entry) => entry.language.name === 'it')?.flavor_text
+  const englishFlavor = [...payload.flavor_text_entries]
+    .reverse()
+    .find((entry) => entry.language.name === 'en')?.flavor_text
+  const englishEffect = payload.effect_entries.find((entry) => entry.language.name === 'en')
+
+  const pokemon: MovePokemonPreview[] = payload.learned_by_pokemon
+    .map((entry) => {
+      const pokemonId = extractId(entry.url)
+      return {
+        id: pokemonId,
+        name: titleCasePokemonName(entry.name),
+        image: officialArtwork(pokemonId),
+      }
+    })
+    .filter((entry) => Number.isFinite(entry.id) && entry.id > 0)
+    .sort((a, b) => a.id - b.id)
+
+  const meta = payload.meta
+  const detail: MoveDetailData = {
+    id: payload.id,
+    slug: payload.name,
+    name: localizedName(payload.names, payload.name),
+    englishName: indexEntry?.englishName ?? titleCasePokemonName(payload.name),
+    generation: indexEntry?.generation ?? generationId,
+    type: payload.type.name,
+    damageClass: payload.damage_class.name,
+    power: payload.power,
+    pp: payload.pp,
+    accuracy: payload.accuracy,
+    priority: payload.priority,
+    description: cleanText(italianFlavor ?? englishFlavor ?? 'Descrizione non disponibile.'),
+    effect: replaceEffectChance(
+      englishEffect?.short_effect ?? englishEffect?.effect ?? italianFlavor ?? englishFlavor ?? 'Effetto non disponibile.',
+      payload.effect_chance,
+    ),
+    effectChance: payload.effect_chance,
+    target: moveTargetNames[payload.target.name] ?? titleCasePokemonName(payload.target.name),
+    ailment: meta && meta.ailment.name !== 'none'
+      ? moveAilmentNames[meta.ailment.name] ?? titleCasePokemonName(meta.ailment.name)
+      : null,
+    category: meta ? moveCategoryNames[meta.category.name] ?? titleCasePokemonName(meta.category.name) : 'Non specificata',
+    minHits: meta?.min_hits ?? null,
+    maxHits: meta?.max_hits ?? null,
+    minTurns: meta?.min_turns ?? null,
+    maxTurns: meta?.max_turns ?? null,
+    drain: meta?.drain ?? 0,
+    healing: meta?.healing ?? 0,
+    critRate: meta?.crit_rate ?? 0,
+    ailmentChance: meta?.ailment_chance ?? 0,
+    flinchChance: meta?.flinch_chance ?? 0,
+    statChance: meta?.stat_chance ?? 0,
+    statChanges: payload.stat_changes.map((change) => ({
+      stat: statNamesIt[change.stat.name] ?? titleCasePokemonName(change.stat.name),
+      change: change.change,
+    })),
+    learnedByPokemon: pokemon,
+  }
+
+  moveDetailCache.set(id, detail)
   return detail
 }

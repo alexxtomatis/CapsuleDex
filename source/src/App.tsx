@@ -7,11 +7,13 @@ import { FavoritesView } from './components/FavoritesView'
 import { FeatureCard } from './components/FeatureCard'
 import { SearchIcon } from './components/Icon'
 import { PokedexView } from './components/PokedexView'
+import { MoveView } from './components/MoveView'
 import { PokemonDetailView } from './components/PokemonDetailView'
 import { TeamView } from './components/TeamView'
 import { TypeCalculatorView } from './components/TypeCalculatorView'
 import { Toast } from './components/Toast'
 import { features, regions } from './data/features'
+import { moveBySlug } from './data/moveIndex'
 import { loadCollection, saveCollection } from './services/collectionStorage'
 import { loadFavorites, saveFavorites } from './services/favoriteStorage'
 import { createTeamId, loadActiveTeamId, loadTeams, saveActiveTeamId, saveTeams } from './services/teamStorage'
@@ -24,7 +26,7 @@ const phaseLabels: Record<number, string> = {
   11: 'Database abilità',
 }
 
-type Screen = 'home' | 'pokedex' | 'detail' | 'team' | 'favorites' | 'collection' | 'types' | 'battle'
+type Screen = 'home' | 'pokedex' | 'detail' | 'team' | 'favorites' | 'collection' | 'types' | 'battle' | 'moves'
 type DetailReturnScreen = Exclude<Screen, 'detail'>
 
 function App() {
@@ -37,6 +39,7 @@ function App() {
   const [selectedPokemonId, setSelectedPokemonId] = useState(6)
   const [typeCalculatorPokemonId, setTypeCalculatorPokemonId] = useState<number | null>(null)
   const [battlePokemonId, setBattlePokemonId] = useState<number | null>(null)
+  const [selectedMoveId, setSelectedMoveId] = useState<number | null>(null)
   const [activeNav, setActiveNav] = useState('home')
   const [toast, setToast] = useState('')
   const toastTimer = useRef<number | null>(null)
@@ -103,6 +106,14 @@ function App() {
     goToTop()
   }
 
+  function openMoves(moveKey: number | string | null = null) {
+    const moveId = typeof moveKey === 'string' ? moveBySlug.get(moveKey)?.id ?? null : moveKey
+    setSelectedMoveId(moveId)
+    setActiveNav('home')
+    setScreen('moves')
+    goToTop()
+  }
+
   function openBattle(pokemonId: number | null = null) {
     setBattlePokemonId(pokemonId)
     setActiveNav('home')
@@ -146,6 +157,10 @@ function App() {
     }
     if (feature.id === 'battle') {
       openBattle()
+      return
+    }
+    if (feature.id === 'moves') {
+      openMoves()
       return
     }
     const label = phaseLabels[feature.phase] ?? feature.title
@@ -375,7 +390,7 @@ function App() {
                     </p>
                     <h2 id="explore-title">Esplora CapsuleDex</h2>
                   </div>
-                  <span className="progress-chip">8 / 14</span>
+                  <span className="progress-chip">9 / 14</span>
                 </div>
 
                 <div className="feature-grid">
@@ -390,15 +405,15 @@ function App() {
                   <h2 id="highlight-title">In evidenza</h2>
                   <button type="button" onClick={() => showToast('La roadmap è inclusa nel file ROADMAP.md.')}>Roadmap</button>
                 </div>
-                <article className="highlight-card highlight-card--battle">
-                  <div className="highlight-badge">FASE 8</div>
+                <article className="highlight-card highlight-card--moves">
+                  <div className="highlight-badge">FASE 9</div>
                   <div>
                     <p>Nuova funzione disponibile</p>
-                    <h3>Battle Dex</h3>
-                    <span>Confronta due Pokémon per statistiche, tipi, abilità, velocità, BST e mosse apprendibili.</span>
+                    <h3>Database mosse</h3>
+                    <span>Consulta tutte le mosse con nome italiano, potenza, precisione, PP, tipo, categoria, effetto e compatibilità.</span>
                   </div>
-                  <div className="completion-ring completion-ring--phase-eight" aria-label="Fase 8 completata">
-                    <strong>8/14</strong>
+                  <div className="completion-ring completion-ring--phase-nine" aria-label="Fase 9 completata">
+                    <strong>9/14</strong>
                   </div>
                 </article>
               </section>
@@ -475,6 +490,20 @@ function App() {
             />
           )}
 
+          {screen === 'moves' && (
+            <MoveView
+              initialMoveId={selectedMoveId}
+              onBack={() => {
+                setScreen('home')
+                setActiveNav('home')
+                goToTop()
+              }}
+              onOpenPokemon={(id) => openPokemon(id, 'moves')}
+              onSelectionChange={setSelectedMoveId}
+              onToast={showToast}
+            />
+          )}
+
           {screen === 'battle' && (
             <BattleView
               initialPokemonId={battlePokemonId}
@@ -529,6 +558,7 @@ function App() {
               onOpenCollection={openCollection}
               onOpenTypeCalculator={() => openTypeCalculator(selectedPokemonId)}
               onOpenBattle={() => openBattle(selectedPokemonId)}
+              onOpenMove={(moveSlug) => openMoves(moveSlug)}
               onToggleCollectionTrait={(trait, name) => toggleCollectionTrait(selectedPokemonId, trait, name)}
             />
           )}

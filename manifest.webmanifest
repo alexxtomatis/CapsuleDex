@@ -1,7 +1,7 @@
 {
   "name": "CapsuleDex",
   "short_name": "CapsuleDex",
-  "description": "Pokédex, squadre, collezione, calcolatore tipi e Battle Dex Pokémon.",
+  "description": "Pokédex, squadre, collezione, calcolatore tipi, Battle Dex e database mosse Pokémon.",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",

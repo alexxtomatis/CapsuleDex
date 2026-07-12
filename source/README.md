@@ -1,35 +1,47 @@
-# CapsuleDex — Fase 8
+# CapsuleDex — Fase 9
 
 Questa cartella contiene la versione **già compilata** di CapsuleDex, pronta per GitHub Pages. Il progetto React + TypeScript modificabile è incluso nella cartella `source/`.
 
-## Novità della Fase 8 — Battle Dex
+## Novità della Fase 9 — Database mosse
 
-- Nuova schermata **Battle Dex** accessibile dalla Home
-- Ricerca indipendente di due Pokémon per nome o numero Pokédex
-- Comando per scambiare rapidamente i due sfidanti
-- Confronto affiancato di:
-  - sei statistiche base
-  - totale statistiche base (BST)
-  - velocità
-  - tipi e migliore efficacia offensiva STAB
-  - abilità normali e nascoste
-  - repertorio di mosse apprendibili
-  - altezza e peso
-- Punteggio comparativo basato sulle statistiche e sul vantaggio dei tipi
-- Evidenziazione automatica del valore migliore per ogni parametro
-- Apertura delle schede Pokémon direttamente dal confronto
-- Pulsante **Confronta nel Battle Dex** aggiunto a ogni scheda Pokémon
-- Interfaccia responsive pensata per smartphone
-- Gestione di caricamento, errori e indisponibilità temporanea del catalogo
+- Archivio di **937 mosse** indicizzate localmente per una ricerca immediata
+- Nomi italiani e inglesi
+- Ricerca per nome italiano, nome inglese, identificatore API o numero della mossa
+- Filtri per:
+  - tipo
+  - categoria fisica, speciale o di stato
+  - generazione dalla I alla IX
+- Ordinamento per numero, nome, potenza, precisione e PP
+- Schede riepilogative con:
+  - potenza
+  - precisione
+  - PP
+  - tipo
+  - categoria
+  - generazione
+- Scheda completa della mossa con:
+  - descrizione
+  - effetto in lotta
+  - bersaglio
+  - priorità
+  - probabilità degli effetti secondari
+  - problemi di stato
+  - modifiche alle statistiche
+  - colpi multipli e durata
+  - cura, assorbimento e contraccolpo
+  - elenco dei Pokémon compatibili
+- Apertura delle schede Pokémon dall'elenco di compatibilità
+- Collegamento alle mosse direttamente dalle schede Pokémon
+- Copia rapida del riepilogo della mossa
+- Caricamento progressivo per mantenere fluida l'interfaccia su smartphone
+- Cache in memoria dei dettagli già consultati
 
-Il Battle Dex è uno strumento informativo: non simula una lotta reale. Livello, natura, EV, IV, strumenti, abilità, mosse selezionate e regole del formato possono cambiare completamente il risultato.
-
-Tutte le funzioni delle Fasi 1–7 restano disponibili: Home, Pokédex, ricerca, filtri, schede dettagliate, shiny, statistiche, abilità, evoluzioni, varianti, Team Builder, Preferiti, Collezione personale e Calcolatore tipi.
+Tutte le funzioni delle Fasi 1–8 restano disponibili: Home, Pokédex, schede dettagliate, Team Builder, Preferiti, Collezione personale, Calcolatore tipi e Battle Dex.
 
 ## Aggiornamento su GitHub
 
 1. Scarica ed estrai lo ZIP.
-2. Apri la cartella `CapsuleDex-Fase-8`.
+2. Apri la cartella `CapsuleDex-Fase-9`.
 3. Carica **tutto il contenuto interno** nella radice del repository `CapsuleDex`.
 4. Sostituisci i file esistenti, soprattutto `index.html`, `manifest.webmanifest` e la cartella `assets`.
 5. Elimina dalla cartella `assets` del repository i vecchi file `index-*.js` e `index-*.css` che non sono presenti in questo pacchetto.
@@ -50,6 +62,7 @@ Se il browser mostra ancora la versione precedente, esegui un ricaricamento forz
 - `assets/`: JavaScript, CSS, icone e marchio
 - `.nojekyll`: evita elaborazioni indesiderate di GitHub Pages
 - `source/`: progetto React + TypeScript
+- `source/src/data/moveIndex.ts`: indice locale delle mosse
 - `ROADMAP.md`: avanzamento delle fasi
 - `CHANGELOG.md`: modifiche della versione
 
@@ -74,4 +87,4 @@ Collezione, preferiti, squadre e ultime analisi dei tipi vengono salvati nel bro
 
 ## Dati e note legali
 
-CapsuleDex è un progetto fan-made non ufficiale. I dati e le immagini vengono caricati tramite PokéAPI e il relativo repository di sprite. Pokémon e i relativi nomi appartengono ai rispettivi titolari.
+CapsuleDex è un progetto fan-made non ufficiale. L'indice delle mosse deriva dai dati pubblici di PokéAPI; i dettagli e le immagini vengono caricati tramite PokéAPI e il relativo repository di sprite. Pokémon e i relativi nomi appartengono ai rispettivi titolari.

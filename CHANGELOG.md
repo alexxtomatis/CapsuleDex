@@ -1,53 +1,55 @@
 # Changelog
 
-## 0.8.0 — Fase 8
+## 0.9.0 — Fase 9
 
 ### Aggiunto
 
-- Battle Dex per confrontare due Pokémon
-- Ricerca indipendente per nome o numero Pokédex
-- Scambio rapido dei due sfidanti
-- Confronto delle sei statistiche base
-- Confronto del totale BST e della velocità
-- Analisi del migliore moltiplicatore offensivo dei tipi
-- Confronto di abilità normali e nascoste
-- Anteprima delle mosse apprendibili per livello e MT
-- Confronto di altezza e peso
-- Punteggio comparativo con valori migliori evidenziati
-- Apertura delle schede Pokémon dal Battle Dex
-- Accesso al Battle Dex da ogni scheda Pokémon
+- Database completo delle mosse con 937 voci indicizzate
+- Nomi italiani e inglesi ricercabili
+- Ricerca per nome, identificatore API e numero
+- Filtri per tipo, categoria di danno e generazione
+- Ordinamento per numero, nome, potenza, precisione e PP
+- Carte riepilogative delle mosse
+- Scheda dettagliata con descrizione, effetto, bersaglio e priorità
+- Probabilità di stato, tentennamento ed effetti sulle statistiche
+- Dati su cura, assorbimento, contraccolpo, colpi e durata
+- Elenco dei Pokémon che possono apprendere ogni mossa
+- Apertura delle schede Pokémon dalla compatibilità
+- Collegamento alle mosse dalle schede Pokémon
+- Copia rapida del riepilogo
+- Indice locale generato dai dati ufficiali PokéAPI
+- Cache in memoria dei dettagli delle mosse
 
 ### Modificato
 
-- Home aggiornata alla Fase 8
-- Nuova carta Battle Dex nella griglia delle funzioni
-- PokéAPI service esteso con il repertorio delle mosse apprendibili
-- Versione del progetto aggiornata a `0.8.0`
+- Home aggiornata alla Fase 9
+- Carta Mosse resa operativa
+- Indicatore di avanzamento aggiornato a `9 / 14`
+- Servizio PokéAPI esteso con i dettagli completi delle mosse
+- Versione del progetto aggiornata a `0.9.0`
+
+## 0.8.0 — Fase 8
+
+- Battle Dex per confrontare due Pokémon
+- Confronto di statistiche, BST, tipi, abilità e mosse apprendibili
+- Collegamento diretto dalle schede Pokémon
 
 ## 0.7.0 — Fase 7
 
 - Calcolatore difensivo dei tipi
-- Ricerca Pokémon e selezione manuale di uno o due tipi
 - Debolezze, resistenze, immunità e matrice completa dei 18 tipi
-- Collegamento dalle schede Pokémon e storico locale delle analisi
 
 ## 0.6.0 — Fase 6
 
-- Collezione personale dei Pokémon catturati
-- Categorie Shiny, Alpha, Gigamax, Paradox e Leggendario
+- Collezione personale e categorie speciali
 - Dashboard di avanzamento, ricerca, filtri e ordinamento
-- Salvataggio automatico della collezione nel browser
 
 ## 0.5.0 — Fase 5
 
 - Gestione completa dei Pokémon preferiti
-- Ricerca e ordinamento dei preferiti
-- Sincronizzazione dei cuori tra Pokédex, schede e Preferiti
-- Salvataggio automatico nel browser
+- Ricerca, ordinamento e salvataggio locale
 
 ## 0.4.0 — Fase 4
 
 - Team Builder completo
 - Più squadre da un massimo di 6 Pokémon
-- Ricerca, aggiunta, rimozione, rinomina ed eliminazione
-- Salvataggio automatico delle squadre nel browser

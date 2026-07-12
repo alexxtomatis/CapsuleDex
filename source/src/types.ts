@@ -108,3 +108,51 @@ export type CollectionEntry = {
   addedAt: number
   updatedAt: number
 }
+
+export type MoveDamageClass = 'physical' | 'special' | 'status'
+
+export type MoveIndexItem = {
+  id: number
+  slug: string
+  name: string
+  englishName: string
+  generation: number
+  type: string
+  damageClass: MoveDamageClass
+  power: number | null
+  pp: number | null
+  accuracy: number | null
+  priority: number
+}
+
+export type MovePokemonPreview = {
+  id: number
+  name: string
+  image: string
+}
+
+export type MoveStatChange = {
+  stat: string
+  change: number
+}
+
+export type MoveDetailData = MoveIndexItem & {
+  description: string
+  effect: string
+  effectChance: number | null
+  target: string
+  ailment: string | null
+  category: string
+  minHits: number | null
+  maxHits: number | null
+  minTurns: number | null
+  maxTurns: number | null
+  drain: number
+  healing: number
+  critRate: number
+  ailmentChance: number
+  flinchChance: number
+  statChance: number
+  statChanges: MoveStatChange[]
+  learnedByPokemon: MovePokemonPreview[]
+}
