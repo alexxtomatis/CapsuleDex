@@ -5,6 +5,7 @@ import { BottomNav } from './components/BottomNav'
 import { BattleView } from './components/BattleView'
 import { CollectionView } from './components/CollectionView'
 import { FavoritesView } from './components/FavoritesView'
+import { EvolutionView } from './components/EvolutionView'
 import { ItemView } from './components/ItemView'
 import { FeatureCard } from './components/FeatureCard'
 import { SearchIcon } from './components/Icon'
@@ -16,6 +17,7 @@ import { TypeCalculatorView } from './components/TypeCalculatorView'
 import { Toast } from './components/Toast'
 import { features, regions } from './data/features'
 import { abilityBySlug } from './data/abilityIndex'
+import { itemBySlug } from './data/itemIndex'
 import { moveBySlug } from './data/moveIndex'
 import { loadCollection, saveCollection } from './services/collectionStorage'
 import { loadFavorites, saveFavorites } from './services/favoriteStorage'
@@ -27,7 +29,7 @@ const phaseLabels: Record<number, string> = {
   9: 'Database mosse',
 }
 
-type Screen = 'home' | 'pokedex' | 'detail' | 'team' | 'favorites' | 'collection' | 'types' | 'battle' | 'moves' | 'items' | 'abilities'
+type Screen = 'home' | 'pokedex' | 'detail' | 'team' | 'favorites' | 'collection' | 'types' | 'battle' | 'moves' | 'items' | 'abilities' | 'evolutions'
 type DetailReturnScreen = Exclude<Screen, 'detail'>
 
 function App() {
@@ -43,6 +45,7 @@ function App() {
   const [selectedMoveId, setSelectedMoveId] = useState<number | null>(null)
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null)
   const [selectedAbilityId, setSelectedAbilityId] = useState<number | null>(null)
+  const [selectedEvolutionPokemonId, setSelectedEvolutionPokemonId] = useState<number | null>(null)
   const [activeNav, setActiveNav] = useState('home')
   const [toast, setToast] = useState('')
   const toastTimer = useRef<number | null>(null)
@@ -109,7 +112,8 @@ function App() {
     goToTop()
   }
 
-  function openItems(itemId: number | null = null) {
+  function openItems(itemKey: number | string | null = null) {
+    const itemId = typeof itemKey === 'string' ? itemBySlug.get(itemKey)?.id ?? null : itemKey
     setSelectedItemId(itemId)
     setActiveNav('home')
     setScreen('items')
@@ -136,6 +140,13 @@ function App() {
     setSelectedAbilityId(abilityId)
     setActiveNav('home')
     setScreen('abilities')
+    goToTop()
+  }
+
+  function openEvolutions(pokemonId: number | null = null) {
+    setSelectedEvolutionPokemonId(pokemonId)
+    setActiveNav('home')
+    setScreen('evolutions')
     goToTop()
   }
 
@@ -187,6 +198,10 @@ function App() {
     }
     if (feature.id === 'abilities') {
       openAbilities()
+      return
+    }
+    if (feature.id === 'evolutions') {
+      openEvolutions()
       return
     }
     const label = phaseLabels[feature.phase] ?? feature.title
@@ -416,7 +431,7 @@ function App() {
                     </p>
                     <h2 id="explore-title">Esplora CapsuleDex</h2>
                   </div>
-                  <span className="progress-chip">11 / 14</span>
+                  <span className="progress-chip">12 / 14</span>
                 </div>
 
                 <div className="feature-grid">
@@ -431,15 +446,15 @@ function App() {
                   <h2 id="highlight-title">In evidenza</h2>
                   <button type="button" onClick={() => showToast('La roadmap è inclusa nel file ROADMAP.md.')}>Roadmap</button>
                 </div>
-                <article className="highlight-card highlight-card--abilities">
-                  <div className="highlight-badge">FASE 11</div>
+                <article className="highlight-card highlight-card--evolutions">
+                  <div className="highlight-badge">FASE 12</div>
                   <div>
                     <p>Nuova funzione disponibile</p>
-                    <h3>Database abilità</h3>
-                    <span>Consulta effetti, generazioni, variazioni storiche e tutti i Pokémon associati a ogni abilità.</span>
+                    <h3>Evoluzioni avanzate</h3>
+                    <span>Esplora alberi completi, ramificazioni e requisiti come pietre, scambi, felicità, orari e meteo.</span>
                   </div>
-                  <div className="completion-ring completion-ring--phase-eleven" aria-label="Fase 11 completata">
-                    <strong>11/14</strong>
+                  <div className="completion-ring completion-ring--phase-twelve" aria-label="Fase 11 completata">
+                    <strong>12/14</strong>
                   </div>
                 </article>
               </section>
@@ -559,6 +574,22 @@ function App() {
             />
           )}
 
+          {screen === 'evolutions' && (
+            <EvolutionView
+              initialPokemonId={selectedEvolutionPokemonId}
+              onBack={() => {
+                setScreen('home')
+                setActiveNav('home')
+                goToTop()
+              }}
+              onOpenPokemon={(id) => openPokemon(id, 'evolutions')}
+              onOpenItem={(itemSlug) => openItems(itemSlug)}
+              onOpenMove={(moveSlug) => openMoves(moveSlug)}
+              onSelectionChange={setSelectedEvolutionPokemonId}
+              onToast={showToast}
+            />
+          )}
+
           {screen === 'battle' && (
             <BattleView
               initialPokemonId={battlePokemonId}
@@ -615,6 +646,7 @@ function App() {
               onOpenBattle={() => openBattle(selectedPokemonId)}
               onOpenMove={(moveSlug) => openMoves(moveSlug)}
               onOpenAbility={(abilitySlug) => openAbilities(abilitySlug)}
+              onOpenEvolution={() => openEvolutions(selectedPokemonId)}
               onToggleCollectionTrait={(trait, name) => toggleCollectionTrait(selectedPokemonId, trait, name)}
             />
           )}

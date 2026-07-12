@@ -60,13 +60,17 @@
 
 - [x] **Fase 11 — Database abilità**
   - Archivio locale con nomi italiani e inglesi
-  - Ricerca per nome, identificatore e numero
-  - Filtri per generazione e provenienza
-  - Schede con descrizione ed effetto tecnico
-  - Modifiche storiche dell'effetto
-  - Pokémon associati, abilità normali e nascoste
-  - Collegamenti bidirezionali con le schede Pokémon
+  - Ricerca, filtri e ordinamento
+  - Schede con descrizioni, effetti e modifiche storiche
+  - Pokémon associati e abilità nascoste
 
-- [ ] **Fase 12 — Evoluzioni avanzate**
+- [x] **Fase 12 — Evoluzioni avanzate**
+  - Atlante evolutivo ricercabile
+  - Alberi completi e ramificazioni
+  - Livelli, strumenti, scambi, felicità, affetto, orari e meteo
+  - Mosse, luoghi, squadra, statistiche e condizioni speciali
+  - Filtri per metodo e collegamenti a Pokémon, strumenti e mosse
+  - Storico locale e copia del riepilogo
+
 - [ ] **Fase 13 — Modalità offline**
 - [ ] **Fase 14 — Rifinitura e pubblicazione**

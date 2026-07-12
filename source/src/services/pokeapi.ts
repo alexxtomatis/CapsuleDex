@@ -1,12 +1,16 @@
-import { statLabels } from '../data/features'
+import { italianTypeNames, statLabels } from '../data/features'
 import { abilityById } from '../data/abilityIndex'
-import { itemById } from '../data/itemIndex'
+import { itemById, itemBySlug } from '../data/itemIndex'
 import { moveById, moveBySlug } from '../data/moveIndex'
 import type {
   AbilityDetailData,
   AbilityEffectChange,
   AbilityPokemonPreview,
+  EvolutionChainData,
+  EvolutionMethodGroup,
+  EvolutionNodeData,
   EvolutionPath,
+  EvolutionRequirement,
   ItemDetailData,
   ItemHeldPokemonPreview,
   ItemMachinePreview,
@@ -27,6 +31,8 @@ const detailCache = new Map<number, PokemonCardData>()
 const fullDetailCache = new Map<number, PokemonDetailData>()
 const abilityCache = new Map<string, PokemonAbility>()
 const abilityDetailCache = new Map<number, AbilityDetailData>()
+const evolutionChainCache = new Map<number, EvolutionChainData>()
+const speciesCache = new Map<number, SpeciesResponse>()
 const typeCache = new Map<string, Set<number>>()
 let catalogCache: PokemonCatalogItem[] | null = null
 
@@ -104,6 +110,7 @@ type PokemonResponse = {
 
 type SpeciesResponse = {
   id: number
+  is_baby: boolean
   name: string
   names: Array<{ name: string; language: { name: string } }>
   genera: Array<{ genus: string; language: { name: string } }>
@@ -141,14 +148,16 @@ type AbilityResponse = {
   }>
 }
 
+type EvolutionNamedResource = { name: string; url: string }
+
 type EvolutionDetail = {
-  trigger: { name: string }
+  trigger: EvolutionNamedResource
   min_level: number | null
-  item: { name: string } | null
-  held_item: { name: string } | null
-  known_move: { name: string } | null
-  known_move_type: { name: string } | null
-  location: { name: string } | null
+  item: EvolutionNamedResource | null
+  held_item: EvolutionNamedResource | null
+  known_move: EvolutionNamedResource | null
+  known_move_type: EvolutionNamedResource | null
+  location: EvolutionNamedResource | null
   min_happiness: number | null
   min_affection: number | null
   time_of_day: string
@@ -156,19 +165,20 @@ type EvolutionDetail = {
   needs_overworld_rain: boolean
   turn_upside_down: boolean
   relative_physical_stats: number | null
-  party_species: { name: string } | null
-  party_type: { name: string } | null
-  trade_species: { name: string } | null
+  party_species: EvolutionNamedResource | null
+  party_type: EvolutionNamedResource | null
+  trade_species: EvolutionNamedResource | null
 }
 
 type EvolutionChainLink = {
   species: { name: string; url: string }
-  evolution_details: EvolutionDetail[]
+  evolution_details: EvolutionDetail[] | null
   evolves_to: EvolutionChainLink[]
 }
 
 type EvolutionChainResponse = {
   id: number
+  baby_trigger_item: EvolutionNamedResource | null
   chain: EvolutionChainLink
 }
 
@@ -209,34 +219,123 @@ const habitatNames: Record<string, string> = {
   'waters-edge': "Riva dell'acqua",
 }
 
-function formatEvolutionDetail(detail: EvolutionDetail): string {
-  const parts: string[] = [triggerNames[detail.trigger.name] ?? titleCasePokemonName(detail.trigger.name)]
-
-  if (detail.min_level !== null) parts.push(`liv. ${detail.min_level}`)
-  if (detail.item) parts.push(titleCasePokemonName(detail.item.name))
-  if (detail.held_item) parts.push(`con ${titleCasePokemonName(detail.held_item.name)}`)
-  if (detail.known_move) parts.push(`con ${titleCasePokemonName(detail.known_move.name)}`)
-  if (detail.known_move_type) parts.push(`mossa ${titleCasePokemonName(detail.known_move_type.name)}`)
-  if (detail.location) parts.push(`a ${titleCasePokemonName(detail.location.name)}`)
-  if (detail.min_happiness !== null) parts.push(`felicità ${detail.min_happiness}+`)
-  if (detail.min_affection !== null) parts.push(`affetto ${detail.min_affection}+`)
-  if (detail.time_of_day) parts.push(detail.time_of_day === 'day' ? 'di giorno' : 'di notte')
-  if (detail.needs_overworld_rain) parts.push('con pioggia')
-  if (detail.turn_upside_down) parts.push('capovolgendo il dispositivo')
-  if (detail.gender === 1) parts.push('femmina')
-  if (detail.gender === 2) parts.push('maschio')
-  if (detail.relative_physical_stats === 1) parts.push('Attacco > Difesa')
-  if (detail.relative_physical_stats === 0) parts.push('Attacco = Difesa')
-  if (detail.relative_physical_stats === -1) parts.push('Attacco < Difesa')
-  if (detail.party_species) parts.push(`${titleCasePokemonName(detail.party_species.name)} in squadra`)
-  if (detail.party_type) parts.push(`tipo ${titleCasePokemonName(detail.party_type.name)} in squadra`)
-  if (detail.trade_species) parts.push(`per ${titleCasePokemonName(detail.trade_species.name)}`)
-
-  return parts.join(' · ')
+function resourceDisplayName(kind: 'item' | 'move', slug: string): string {
+  if (kind === 'item') return itemBySlug.get(slug)?.name ?? titleCasePokemonName(slug)
+  return moveBySlug.get(slug)?.name ?? titleCasePokemonName(slug)
 }
 
-function evolutionTrigger(details: EvolutionDetail[]): string | null {
-  if (details.length === 0) return null
+function buildEvolutionRequirement(detail: EvolutionDetail): EvolutionRequirement {
+  const groups = new Set<EvolutionMethodGroup>()
+  const details: string[] = []
+  const resources: EvolutionRequirement['resources'] = []
+  const trigger = triggerNames[detail.trigger.name] ?? titleCasePokemonName(detail.trigger.name)
+
+  if (detail.trigger.name === 'level-up') groups.add('level')
+  else if (detail.trigger.name === 'trade') groups.add('trade')
+  else if (detail.trigger.name === 'use-item') groups.add('item')
+  else groups.add('special')
+
+  if (detail.min_level !== null) details.push(`Livello ${detail.min_level}`)
+
+  if (detail.item) {
+    const name = resourceDisplayName('item', detail.item.name)
+    details.push(`Usa ${name}`)
+    resources.push({ kind: 'item', slug: detail.item.name, name })
+    groups.add('item')
+  }
+  if (detail.held_item) {
+    const name = resourceDisplayName('item', detail.held_item.name)
+    details.push(`Tiene ${name}`)
+    resources.push({ kind: 'item', slug: detail.held_item.name, name })
+    groups.add('item')
+  }
+  if (detail.known_move) {
+    const name = resourceDisplayName('move', detail.known_move.name)
+    details.push(`Conosce ${name}`)
+    resources.push({ kind: 'move', slug: detail.known_move.name, name })
+    groups.add('move')
+  }
+  if (detail.known_move_type) {
+    details.push(`Conosce una mossa di tipo ${italianTypeNames[detail.known_move_type.name] ?? titleCasePokemonName(detail.known_move_type.name)}`)
+    groups.add('move')
+  }
+  if (detail.location) {
+    details.push(`Nella zona ${titleCasePokemonName(detail.location.name)}`)
+    groups.add('location')
+  }
+  if (detail.min_happiness !== null) {
+    details.push(`Felicità ${detail.min_happiness}+`)
+    groups.add('friendship')
+  }
+  if (detail.min_affection !== null) {
+    details.push(`Affetto ${detail.min_affection}+`)
+    groups.add('friendship')
+  }
+  if (detail.time_of_day) {
+    details.push(detail.time_of_day === 'day' ? 'Di giorno' : detail.time_of_day === 'night' ? 'Di notte' : titleCasePokemonName(detail.time_of_day))
+    groups.add('time')
+  }
+  if (detail.needs_overworld_rain) {
+    details.push('Con pioggia nel mondo di gioco')
+    groups.add('weather')
+  }
+  if (detail.turn_upside_down) {
+    details.push('Capovolgi il dispositivo durante il livello')
+    groups.add('special')
+  }
+  if (detail.gender === 1) {
+    details.push('Solo femmina')
+    groups.add('special')
+  }
+  if (detail.gender === 2) {
+    details.push('Solo maschio')
+    groups.add('special')
+  }
+  if (detail.relative_physical_stats === 1) {
+    details.push('Attacco maggiore della Difesa')
+    groups.add('stats')
+  }
+  if (detail.relative_physical_stats === 0) {
+    details.push('Attacco uguale alla Difesa')
+    groups.add('stats')
+  }
+  if (detail.relative_physical_stats === -1) {
+    details.push('Attacco minore della Difesa')
+    groups.add('stats')
+  }
+  if (detail.party_species) {
+    details.push(`${titleCasePokemonName(detail.party_species.name)} in squadra`)
+    groups.add('party')
+  }
+  if (detail.party_type) {
+    details.push(`Un Pokémon di tipo ${italianTypeNames[detail.party_type.name] ?? titleCasePokemonName(detail.party_type.name)} in squadra`)
+    groups.add('party')
+  }
+  if (detail.trade_species) {
+    details.push(`Scambio con ${titleCasePokemonName(detail.trade_species.name)}`)
+    groups.add('trade')
+  }
+
+  const uniqueResources = resources.filter((resource, index) => (
+    resources.findIndex((candidate) => candidate.kind === resource.kind && candidate.slug === resource.slug) === index
+  ))
+  const uniqueDetails = [...new Set(details)]
+
+  return {
+    trigger,
+    summary: [trigger, ...uniqueDetails].join(' · '),
+    groups: [...groups],
+    details: uniqueDetails,
+    resources: uniqueResources,
+  }
+}
+
+function formatEvolutionDetail(detail: EvolutionDetail): string {
+  return buildEvolutionRequirement(detail).summary
+}
+
+function evolutionTrigger(details: EvolutionDetail[] | null): string | null {
+  if (!details || details.length === 0) return null
   const labels = [...new Set(details.map(formatEvolutionDetail))]
   return labels.join(' / ')
 }
@@ -264,6 +363,110 @@ function buildEvolutionPaths(root: EvolutionChainLink): EvolutionPath[] {
 
   visit(root, [])
   return paths
+}
+
+async function getSpeciesPayload(id: number, signal?: AbortSignal): Promise<SpeciesResponse> {
+  const cached = speciesCache.get(id)
+  if (cached) return cached
+  const payload = await fetchJson<SpeciesResponse>(`${API_BASE}/pokemon-species/${id}`, signal)
+  speciesCache.set(payload.id, payload)
+  return payload
+}
+
+async function resolveSpeciesPayload(key: number | string, signal?: AbortSignal): Promise<SpeciesResponse> {
+  try {
+    const payload = await fetchJson<SpeciesResponse>(`${API_BASE}/pokemon-species/${key}`, signal)
+    speciesCache.set(payload.id, payload)
+    return payload
+  } catch (error) {
+    if (signal?.aborted) throw error
+    const pokemon = await fetchJson<PokemonResponse>(`${API_BASE}/pokemon/${key}`, signal)
+    return getSpeciesPayload(extractId(pokemon.species.url), signal)
+  }
+}
+
+function collectEvolutionLinks(root: EvolutionChainLink): EvolutionChainLink[] {
+  return [root, ...root.evolves_to.flatMap(collectEvolutionLinks)]
+}
+
+function countEvolutionLeaves(node: EvolutionNodeData): number {
+  if (node.evolvesTo.length === 0) return 1
+  return node.evolvesTo.reduce((sum, child) => sum + countEvolutionLeaves(child), 0)
+}
+
+function evolutionDepth(node: EvolutionNodeData): number {
+  if (node.evolvesTo.length === 0) return 1
+  return 1 + Math.max(...node.evolvesTo.map(evolutionDepth))
+}
+
+function collectEvolutionGroups(node: EvolutionNodeData, output = new Set<EvolutionMethodGroup>()): Set<EvolutionMethodGroup> {
+  node.requirements.forEach((requirement) => requirement.groups.forEach((group) => output.add(group)))
+  node.evolvesTo.forEach((child) => collectEvolutionGroups(child, output))
+  return output
+}
+
+function buildEvolutionNode(
+  link: EvolutionChainLink,
+  speciesById: Map<number, SpeciesResponse>,
+): EvolutionNodeData {
+  const id = extractId(link.species.url)
+  const species = speciesById.get(id)
+  const italianName = localizedName(species?.names, link.species.name)
+  return {
+    id,
+    slug: link.species.name,
+    name: italianName,
+    englishName: titleCasePokemonName(link.species.name),
+    image: officialArtwork(id),
+    isBaby: species?.is_baby ?? false,
+    requirements: (link.evolution_details ?? []).map(buildEvolutionRequirement),
+    evolvesTo: link.evolves_to.map((child) => buildEvolutionNode(child, speciesById)),
+  }
+}
+
+export async function getEvolutionChainForPokemon(
+  pokemonKey: number | string,
+  signal?: AbortSignal,
+): Promise<EvolutionChainData> {
+  const species = await resolveSpeciesPayload(pokemonKey, signal)
+  if (!species.evolution_chain) throw new Error('Questo Pokémon non dispone di una catena evolutiva.')
+
+  const chainId = extractId(species.evolution_chain.url)
+  const cached = evolutionChainCache.get(chainId)
+  if (cached) return cached
+
+  const payload = await fetchJson<EvolutionChainResponse>(species.evolution_chain.url, signal)
+  const links = collectEvolutionLinks(payload.chain)
+  const uniqueIds = [...new Set(links.map((link) => extractId(link.species.url)).filter(Number.isFinite))]
+  const speciesPayloads = await Promise.all(uniqueIds.map(async (id) => {
+    try {
+      return await getSpeciesPayload(id, signal)
+    } catch (error) {
+      if (signal?.aborted) throw error
+      return null
+    }
+  }))
+  const speciesById = new Map(speciesPayloads.filter((entry): entry is SpeciesResponse => Boolean(entry)).map((entry) => [entry.id, entry]))
+  const root = buildEvolutionNode(payload.chain, speciesById)
+  const babyTriggerItem = payload.baby_trigger_item
+    ? {
+        kind: 'item' as const,
+        slug: payload.baby_trigger_item.name,
+        name: resourceDisplayName('item', payload.baby_trigger_item.name),
+      }
+    : null
+  const result: EvolutionChainData = {
+    id: payload.id,
+    root,
+    babyTriggerItem,
+    speciesCount: uniqueIds.length,
+    branchCount: countEvolutionLeaves(root),
+    maxDepth: evolutionDepth(root),
+    methodGroups: [...collectEvolutionGroups(root)],
+  }
+
+  evolutionChainCache.set(payload.id, result)
+  return result
 }
 
 async function getAbility(

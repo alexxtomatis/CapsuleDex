@@ -62,10 +62,11 @@ type DetailProps = {
   onOpenBattle: () => void
   onOpenMove: (moveSlug: string) => void
   onOpenAbility: (abilitySlug: string) => void
+  onOpenEvolution: () => void
   onToggleCollectionTrait: (trait: CollectionTrait, name?: string) => void
 }
 
-export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, isInTeam, isTeamFull, onAddToTeam, onOpenTeam, isFavorite, onToggleFavorite, collectionEntry, onAddToCollection, onOpenCollection, onOpenTypeCalculator, onOpenBattle, onOpenMove, onOpenAbility, onToggleCollectionTrait }: DetailProps) {
+export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, isInTeam, isTeamFull, onAddToTeam, onOpenTeam, isFavorite, onToggleFavorite, collectionEntry, onAddToCollection, onOpenCollection, onOpenTypeCalculator, onOpenBattle, onOpenMove, onOpenAbility, onOpenEvolution, onToggleCollectionTrait }: DetailProps) {
   const [pokemon, setPokemon] = useState<PokemonDetailData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -299,6 +300,17 @@ export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, i
             <small>Usa {displayName} come primo sfidante</small>
           </span>
           <b>VS</b>
+        </button>
+      </div>
+
+      <div className="detail-evolution-db-action">
+        <button type="button" onClick={onOpenEvolution}>
+          <EvolutionIcon />
+          <span>
+            <strong>Apri l’Atlante evolutivo</strong>
+            <small>Esplora tutti i rami e i requisiti di {displayName}</small>
+          </span>
+          <b>→</b>
         </button>
       </div>
 

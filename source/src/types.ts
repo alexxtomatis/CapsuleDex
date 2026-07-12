@@ -41,6 +41,54 @@ export type EvolutionStep = {
 
 export type EvolutionPath = EvolutionStep[]
 
+export type EvolutionMethodGroup =
+  | 'level'
+  | 'item'
+  | 'trade'
+  | 'friendship'
+  | 'time'
+  | 'weather'
+  | 'move'
+  | 'location'
+  | 'party'
+  | 'stats'
+  | 'special'
+
+export type EvolutionResourceLink = {
+  kind: 'item' | 'move'
+  slug: string
+  name: string
+}
+
+export type EvolutionRequirement = {
+  trigger: string
+  summary: string
+  groups: EvolutionMethodGroup[]
+  details: string[]
+  resources: EvolutionResourceLink[]
+}
+
+export type EvolutionNodeData = {
+  id: number
+  slug: string
+  name: string
+  englishName: string
+  image: string
+  isBaby: boolean
+  requirements: EvolutionRequirement[]
+  evolvesTo: EvolutionNodeData[]
+}
+
+export type EvolutionChainData = {
+  id: number
+  root: EvolutionNodeData
+  babyTriggerItem: EvolutionResourceLink | null
+  speciesCount: number
+  branchCount: number
+  maxDepth: number
+  methodGroups: EvolutionMethodGroup[]
+}
+
 export type PokemonMovePreview = {
   id: string
   name: string
