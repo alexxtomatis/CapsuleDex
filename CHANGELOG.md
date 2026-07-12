@@ -1,27 +1,32 @@
 # Changelog
 
-## 0.4.0 — Fase 4
+## 0.5.0 — Fase 5
 
 ### Aggiunto
 
-- Team Builder completo
-- Squadra attiva fino a 6 Pokémon
-- Ricerca e aggiunta per nome o numero
-- Rimozione dei membri del team
-- Creazione e gestione di più squadre
-- Selezione rapida della squadra attiva
-- Rinomina ed eliminazione delle squadre
-- Conteggio dei tipi e degli slot disponibili
-- Salvataggio automatico delle squadre nel browser
-- Squadra dimostrativa iniziale
-- Accesso alla scheda Pokémon dal Team Builder
-- Aggiunta alla squadra dalla scheda dettagliata
-- Voce Squadra nella barra di navigazione
-- Finestre di conferma e modifica ottimizzate per mobile
+- Gestione completa dei Pokémon preferiti
+- Pulsante a cuore nelle carte del Pokédex
+- Pulsante preferiti nella scheda dettagliata
+- Schermata Preferiti nella navigazione principale
+- Ricerca tra i Pokémon salvati
+- Ordinamento per recenti, numero e nome
+- Conteggio dinamico dei preferiti
+- Rimozione singola e svuotamento completo della lista
+- Conferma prima della cancellazione totale
+- Salvataggio automatico nel browser
+- Stato vuoto con collegamento al Pokédex
 
 ### Modificato
 
-- Home aggiornata alla Fase 4
-- Carta “La mia squadra” resa operativa
-- Navigazione principale aggiornata
-- Versione del progetto aggiornata a `0.4.0`
+- Carte Pokémon adattate per supportare due azioni separate
+- Home aggiornata alla Fase 5
+- Carta Preferiti resa operativa
+- Navigazione e schede Pokémon sincronizzate con lo stato dei preferiti
+- Versione del progetto aggiornata a `0.5.0`
+
+## 0.4.0 — Fase 4
+
+- Team Builder completo
+- Più squadre da un massimo di 6 Pokémon
+- Ricerca, aggiunta, rimozione, rinomina ed eliminazione
+- Salvataggio automatico delle squadre nel browser

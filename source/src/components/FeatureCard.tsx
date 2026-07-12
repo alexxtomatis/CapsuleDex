@@ -11,7 +11,7 @@ export function FeatureCard({ feature, onOpen }: FeatureCardProps) {
   return (
     <button
       type="button"
-      className={`feature-card feature-card--${feature.accent}${ready ? ' feature-card--ready' : ''}`}
+      className={`feature-card feature-card--${feature.accent} feature-card--${feature.id}${ready ? ' feature-card--ready' : ''}`}
       onClick={() => onOpen(feature)}
       aria-label={ready ? `Apri ${feature.title}` : `${feature.title}, prevista nella fase ${feature.phase}`}
     >

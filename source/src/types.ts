@@ -85,3 +85,8 @@ export type PokemonTeam = {
   pokemonIds: number[]
   createdAt: number
 }
+
+export type FavoriteEntry = {
+  pokemonId: number
+  addedAt: number
+}

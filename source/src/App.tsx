@@ -1,6 +1,7 @@
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AppHeader } from './components/AppHeader'
 import { BottomNav } from './components/BottomNav'
+import { FavoritesView } from './components/FavoritesView'
 import { FeatureCard } from './components/FeatureCard'
 import { SearchIcon } from './components/Icon'
 import { PokedexView } from './components/PokedexView'
@@ -8,18 +9,18 @@ import { PokemonDetailView } from './components/PokemonDetailView'
 import { TeamView } from './components/TeamView'
 import { Toast } from './components/Toast'
 import { features, regions } from './data/features'
+import { loadFavorites, saveFavorites } from './services/favoriteStorage'
 import { createTeamId, loadActiveTeamId, loadTeams, saveActiveTeamId, saveTeams } from './services/teamStorage'
-import type { Feature, PokemonTeam } from './types'
+import type { FavoriteEntry, Feature, PokemonTeam } from './types'
 
 const phaseLabels: Record<number, string> = {
-  5: 'Preferiti',
   6: 'Collezione e zone',
   9: 'Database mosse',
   10: 'Database strumenti',
   11: 'Database abilità',
 }
 
-type Screen = 'home' | 'pokedex' | 'detail' | 'team'
+type Screen = 'home' | 'pokedex' | 'detail' | 'team' | 'favorites'
 type DetailReturnScreen = Exclude<Screen, 'detail'>
 
 function App() {
@@ -34,11 +35,15 @@ function App() {
   const [toast, setToast] = useState('')
   const toastTimer = useRef<number | null>(null)
 
+  const [favorites, setFavorites] = useState<FavoriteEntry[]>(() => loadFavorites())
   const [teams, setTeams] = useState<PokemonTeam[]>(() => loadTeams())
   const [activeTeamId, setActiveTeamId] = useState(() => loadActiveTeamId(loadTeams()))
 
+  useEffect(() => saveFavorites(favorites), [favorites])
   useEffect(() => saveTeams(teams), [teams])
   useEffect(() => saveActiveTeamId(activeTeamId), [activeTeamId])
+
+  const favoriteIds = useMemo(() => new Set(favorites.map((favorite) => favorite.pokemonId)), [favorites])
 
   const activeTeam = useMemo(
     () => teams.find((team) => team.id === activeTeamId) ?? teams[0],
@@ -69,6 +74,12 @@ function App() {
     goToTop()
   }
 
+  function openFavorites() {
+    setActiveNav('favorites')
+    setScreen('favorites')
+    goToTop()
+  }
+
   function openPokemon(id: number, returnScreen?: DetailReturnScreen) {
     setSelectedPokemonId(id)
     if (returnScreen) setDetailReturnScreen(returnScreen)
@@ -91,6 +102,10 @@ function App() {
       openTeam()
       return
     }
+    if (feature.id === 'favorites') {
+      openFavorites()
+      return
+    }
     const label = phaseLabels[feature.phase] ?? feature.title
     showToast(`${label}: prevista nella Fase ${feature.phase}.`)
   }
@@ -106,7 +121,34 @@ function App() {
       openTeam()
       return
     }
+    if (id === 'favorites') {
+      openFavorites()
+      return
+    }
     showToast(`${label} sarà attivato in una fase successiva.`)
+  }
+
+  function toggleFavorite(pokemonId: number, pokemonName?: string) {
+    const exists = favoriteIds.has(pokemonId)
+    if (exists) {
+      setFavorites((current) => current.filter((favorite) => favorite.pokemonId !== pokemonId))
+      showToast(`${pokemonName ?? 'Pokémon'} rimosso dai preferiti.`)
+      return
+    }
+
+    setFavorites((current) => [
+      { pokemonId, addedAt: Date.now() },
+      ...current.filter((favorite) => favorite.pokemonId !== pokemonId),
+    ])
+    showToast(`${pokemonName ?? 'Pokémon'} aggiunto ai preferiti.`)
+  }
+
+  function clearFavorites() {
+    if (favorites.length === 0) return
+    const confirmed = window.confirm(`Rimuovere tutti i ${favorites.length} Pokémon dai preferiti?`)
+    if (!confirmed) return
+    setFavorites([])
+    showToast('Lista dei preferiti svuotata.')
   }
 
   function createTeam(name: string) {
@@ -229,7 +271,7 @@ function App() {
                     </p>
                     <h2 id="explore-title">Esplora CapsuleDex</h2>
                   </div>
-                  <span className="progress-chip">4 / 14</span>
+                  <span className="progress-chip">5 / 14</span>
                 </div>
 
                 <div className="feature-grid">
@@ -244,15 +286,15 @@ function App() {
                   <h2 id="highlight-title">In evidenza</h2>
                   <button type="button" onClick={() => showToast('La roadmap è inclusa nel file ROADMAP.md.')}>Roadmap</button>
                 </div>
-                <article className="highlight-card highlight-card--team">
-                  <div className="highlight-badge">FASE 4</div>
+                <article className="highlight-card highlight-card--favorites">
+                  <div className="highlight-badge">FASE 5</div>
                   <div>
                     <p>Nuova funzione disponibile</p>
-                    <h3>Team Builder</h3>
-                    <span>Crea più squadre, assegna fino a 6 Pokémon e ritrova tutto al prossimo accesso.</span>
+                    <h3>Preferiti</h3>
+                    <span>Salva i Pokémon che ami, cercali e ordinali nella tua raccolta personale.</span>
                   </div>
-                  <div className="completion-ring completion-ring--phase-four" aria-label="Fase 4 completata">
-                    <strong>4/14</strong>
+                  <div className="completion-ring completion-ring--phase-five" aria-label="Fase 5 completata">
+                    <strong>5/14</strong>
                   </div>
                 </article>
               </section>
@@ -274,6 +316,24 @@ function App() {
                 goToTop()
               }}
               onOpenPokemon={(id) => openPokemon(id, 'pokedex')}
+              onToast={showToast}
+              favoriteIds={favoriteIds}
+              onToggleFavorite={toggleFavorite}
+            />
+          )}
+
+          {screen === 'favorites' && (
+            <FavoritesView
+              favorites={favorites}
+              onBack={() => {
+                setScreen('home')
+                setActiveNav('home')
+                goToTop()
+              }}
+              onOpenPokedex={() => openPokedex()}
+              onOpenPokemon={(id) => openPokemon(id, 'favorites')}
+              onToggleFavorite={toggleFavorite}
+              onClearFavorites={clearFavorites}
               onToast={showToast}
             />
           )}
@@ -303,7 +363,7 @@ function App() {
               pokemonId={selectedPokemonId}
               onBack={() => {
                 setScreen(detailReturnScreen)
-                setActiveNav(detailReturnScreen === 'team' ? 'team' : 'home')
+                setActiveNav(detailReturnScreen === 'team' ? 'team' : detailReturnScreen === 'favorites' ? 'favorites' : 'home')
                 goToTop()
               }}
               onOpenPokemon={(id) => openPokemon(id)}
@@ -312,6 +372,8 @@ function App() {
               isTeamFull={Boolean(activeTeam && activeTeam.pokemonIds.length >= 6)}
               onAddToTeam={() => addPokemonToTeam(selectedPokemonId)}
               onOpenTeam={openTeam}
+              isFavorite={favoriteIds.has(selectedPokemonId)}
+              onToggleFavorite={(name) => toggleFavorite(selectedPokemonId, name)}
             />
           )}
         </div>

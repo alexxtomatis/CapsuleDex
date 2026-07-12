@@ -13,13 +13,15 @@ type PokedexViewProps = {
   onBack: () => void
   onOpenPokemon: (id: number) => void
   onToast: (message: string) => void
+  favoriteIds: Set<number>
+  onToggleFavorite: (id: number, name?: string) => void
 }
 
 function normalize(value: string) {
   return value.trim().toLowerCase().replace(/\s+/g, '-')
 }
 
-export function PokedexView({ initialQuery, initialRegion, onBack, onOpenPokemon, onToast }: PokedexViewProps) {
+export function PokedexView({ initialQuery, initialRegion, onBack, onOpenPokemon, onToast, favoriteIds, onToggleFavorite }: PokedexViewProps) {
   const [catalog, setCatalog] = useState<PokemonCatalogItem[]>([])
   const [query, setQuery] = useState(initialQuery)
   const [regionId, setRegionId] = useState(initialRegion)
@@ -251,7 +253,15 @@ export function PokedexView({ initialQuery, initialRegion, onBack, onOpenPokemon
           <>
             <div className="pokemon-grid" aria-busy={cardsLoading}>
               {cards.length > 0
-                ? cards.map((pokemon) => <PokemonCard key={pokemon.id} pokemon={pokemon} onOpen={openPokemon} />)
+                ? cards.map((pokemon) => (
+                    <PokemonCard
+                      key={pokemon.id}
+                      pokemon={pokemon}
+                      onOpen={openPokemon}
+                      isFavorite={favoriteIds.has(pokemon.id)}
+                      onToggleFavorite={() => onToggleFavorite(pokemon.id, pokemon.name)}
+                    />
+                  ))
                 : Array.from({ length: Math.min(8, visibleIds.length) }, (_, index) => <PokemonCardSkeleton key={index} />)}
             </div>
 

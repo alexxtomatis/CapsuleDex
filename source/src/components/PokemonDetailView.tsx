@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { italianTypeNames } from '../data/features'
 import { getPokemonDetail } from '../services/pokeapi'
 import type { PokemonDetailData, PokemonStat } from '../types'
-import { ArrowLeftIcon, ChartIcon, EvolutionIcon, IconButton, InfoIcon, StarIcon, UsersIcon } from './Icon'
+import { ArrowLeftIcon, ChartIcon, EvolutionIcon, HeartIcon, IconButton, InfoIcon, StarIcon, UsersIcon } from './Icon'
 
 const padId = (id: number) => `N°${String(id).padStart(4, '0')}`
 
@@ -53,9 +53,11 @@ type DetailProps = {
   isTeamFull: boolean
   onAddToTeam: () => void
   onOpenTeam: () => void
+  isFavorite: boolean
+  onToggleFavorite: (name?: string) => void
 }
 
-export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, isInTeam, isTeamFull, onAddToTeam, onOpenTeam }: DetailProps) {
+export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, isInTeam, isTeamFull, onAddToTeam, onOpenTeam, isFavorite, onToggleFavorite }: DetailProps) {
   const [pokemon, setPokemon] = useState<PokemonDetailData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -142,9 +144,14 @@ export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, i
       <header className="detail-topbar">
         <IconButton label="Torna al Pokédex" onClick={onBack}><ArrowLeftIcon /></IconButton>
         <span className="detail-topbar__title">Scheda Pokémon</span>
-        <IconButton label={isInTeam ? 'Apri la squadra' : 'Aggiungi alla squadra'} onClick={isInTeam ? onOpenTeam : onAddToTeam}>
-          <UsersIcon />
-        </IconButton>
+        <div className="detail-topbar__actions">
+          <IconButton label={isFavorite ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti'} onClick={() => onToggleFavorite(displayName)} active={isFavorite}>
+            <HeartIcon />
+          </IconButton>
+          <IconButton label={isInTeam ? 'Apri la squadra' : 'Aggiungi alla squadra'} onClick={isInTeam ? onOpenTeam : onAddToTeam}>
+            <UsersIcon />
+          </IconButton>
+        </div>
       </header>
 
       <section className="detail-hero" id="detail-overview">
@@ -187,6 +194,22 @@ export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, i
       <section className="detail-description">
         <p>{pokemon.description}</p>
       </section>
+
+      <div className="detail-favorite-action">
+        <button
+          type="button"
+          className={isFavorite ? 'is-favorite' : ''}
+          onClick={() => onToggleFavorite(displayName)}
+          aria-pressed={isFavorite}
+        >
+          <HeartIcon />
+          <span>
+            <strong>{isFavorite ? 'Salvato nei preferiti' : 'Aggiungi ai preferiti'}</strong>
+            <small>{isFavorite ? 'Premi per rimuoverlo dalla lista' : 'Ritrovalo subito nella tua raccolta'}</small>
+          </span>
+          <b>{isFavorite ? '✓' : '+'}</b>
+        </button>
+      </div>
 
       <div className="detail-team-action">
         <button

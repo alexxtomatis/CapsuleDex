@@ -30,7 +30,14 @@
   - Salvataggio locale automatico
   - Collegamento dalle schede Pokémon
 
-- [ ] **Fase 5 — Preferiti**
+- [x] **Fase 5 — Preferiti**
+  - Aggiunta e rimozione dal Pokédex e dalle schede
+  - Schermata personale dedicata
+  - Ricerca per nome e numero
+  - Ordinamento per recenti, numero e nome
+  - Conteggio e svuotamento della lista
+  - Salvataggio locale automatico
+
 - [ ] **Fase 6 — Collezione personale**
 - [ ] **Fase 7 — Calcolatore tipi**
 - [ ] **Fase 8 — Confronto Pokémon**
