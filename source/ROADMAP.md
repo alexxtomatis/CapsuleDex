@@ -57,7 +57,15 @@
   - Collegamento dalle schede Pokémon
   - Ultime analisi salvate localmente
 
-- [ ] **Fase 8 — Confronto Pokémon**
+- [x] **Fase 8 — Battle Dex**
+  - Ricerca e selezione di due Pokémon
+  - Confronto delle sei statistiche base
+  - Velocità e totale BST
+  - Efficacia offensiva dei tipi
+  - Abilità normali e nascoste
+  - Anteprima delle mosse apprendibili
+  - Punteggio comparativo ed evidenziazione dei vantaggi
+  - Collegamento diretto dalle schede Pokémon
 - [ ] **Fase 9 — Database mosse**
 - [ ] **Fase 10 — Database strumenti**
 - [ ] **Fase 11 — Database abilità**

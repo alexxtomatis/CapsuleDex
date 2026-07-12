@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { italianTypeNames } from '../data/features'
 import { getPokemonDetail } from '../services/pokeapi'
 import type { CollectionEntry, CollectionTrait, PokemonDetailData, PokemonStat } from '../types'
-import { ArrowLeftIcon, ChartIcon, CollectionIcon, EvolutionIcon, HeartIcon, IconButton, InfoIcon, StarIcon, UsersIcon } from './Icon'
+import { ArrowLeftIcon, ChartIcon, CollectionIcon, EvolutionIcon, HeartIcon, IconButton, InfoIcon, StarIcon, UsersIcon, VersusIcon } from './Icon'
 
 const padId = (id: number) => `N°${String(id).padStart(4, '0')}`
 
@@ -59,10 +59,11 @@ type DetailProps = {
   onAddToCollection: (name?: string) => void
   onOpenCollection: () => void
   onOpenTypeCalculator: () => void
+  onOpenBattle: () => void
   onToggleCollectionTrait: (trait: CollectionTrait, name?: string) => void
 }
 
-export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, isInTeam, isTeamFull, onAddToTeam, onOpenTeam, isFavorite, onToggleFavorite, collectionEntry, onAddToCollection, onOpenCollection, onOpenTypeCalculator, onToggleCollectionTrait }: DetailProps) {
+export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, isInTeam, isTeamFull, onAddToTeam, onOpenTeam, isFavorite, onToggleFavorite, collectionEntry, onAddToCollection, onOpenCollection, onOpenTypeCalculator, onOpenBattle, onToggleCollectionTrait }: DetailProps) {
   const [pokemon, setPokemon] = useState<PokemonDetailData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -277,6 +278,17 @@ export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, i
             <small>Apri il calcolatore con i tipi di {displayName}</small>
           </span>
           <b>→</b>
+        </button>
+      </div>
+
+      <div className="detail-battle-action">
+        <button type="button" onClick={onOpenBattle}>
+          <VersusIcon />
+          <span>
+            <strong>Confronta nel Battle Dex</strong>
+            <small>Usa {displayName} come primo sfidante</small>
+          </span>
+          <b>VS</b>
         </button>
       </div>
 

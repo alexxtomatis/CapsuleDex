@@ -6,6 +6,7 @@ import type {
   PokemonCardData,
   PokemonCatalogItem,
   PokemonDetailData,
+  PokemonMovePreview,
   PokemonVariant,
 } from '../types'
 
@@ -79,6 +80,14 @@ type PokemonResponse = {
   types: Array<{ slot: number; type: { name: string } }>
   stats: Array<{ base_stat: number; stat: { name: string } }>
   abilities: Array<{ is_hidden: boolean; slot: number; ability: { name: string; url: string } }>
+  moves: Array<{
+    move: { name: string; url: string }
+    version_group_details: Array<{
+      level_learned_at: number
+      move_learn_method: { name: string }
+      version_group: { name: string }
+    }>
+  }>
 }
 
 type SpeciesResponse = {
@@ -392,6 +401,16 @@ export async function getPokemonDetail(id: number, signal?: AbortSignal): Promis
     value: entry.base_stat,
   }))
 
+  const moves: PokemonMovePreview[] = pokemon.moves.map((entry) => {
+    const latestDetail = entry.version_group_details.at(-1)
+    return {
+      id: entry.move.name,
+      name: titleCasePokemonName(entry.move.name),
+      method: latestDetail?.move_learn_method.name ?? 'unknown',
+      level: latestDetail?.level_learned_at ?? 0,
+    }
+  })
+
   const detail: PokemonDetailData = {
     id: pokemon.id,
     name: titleCasePokemonName(pokemon.name),
@@ -412,6 +431,7 @@ export async function getPokemonDetail(id: number, signal?: AbortSignal): Promis
     abilities,
     evolutionPaths,
     variants,
+    moves,
   }
 
   fullDetailCache.set(id, detail)

@@ -1,34 +1,35 @@
-# CapsuleDex — Fase 7
+# CapsuleDex — Fase 8
 
 Questa cartella contiene la versione **già compilata** di CapsuleDex, pronta per GitHub Pages. Il progetto React + TypeScript modificabile è incluso nella cartella `source/`.
 
-## Novità della Fase 7 — Calcolatore tipi
+## Novità della Fase 8 — Battle Dex
 
-- Nuova schermata **Calcolatore tipi** accessibile dalla Home e dalla barra inferiore
-- Ricerca di un Pokémon per nome o numero Pokédex
-- Caricamento automatico dei tipi del Pokémon scelto
-- Selezione manuale di uno o due tipi
-- Calcolo di:
-  - debolezze ×4
-  - debolezze ×2
-  - resistenze ×0,5
-  - resistenze ×0,25
-  - immunità ×0
-- Matrice completa dei 18 tipi con il moltiplicatore dei danni ricevuti
-- Riepilogo immediato di debolezze, resistenze e immunità
-- Collegamento diretto dalla scheda di ogni Pokémon
-- Apertura della scheda Pokémon dal risultato del calcolatore
-- Memorizzazione locale delle ultime analisi
-- Tabella dei tipi integrata nell'app: il calcolo continua a funzionare anche senza richieste aggiuntive alla PokéAPI dopo aver selezionato i tipi
+- Nuova schermata **Battle Dex** accessibile dalla Home
+- Ricerca indipendente di due Pokémon per nome o numero Pokédex
+- Comando per scambiare rapidamente i due sfidanti
+- Confronto affiancato di:
+  - sei statistiche base
+  - totale statistiche base (BST)
+  - velocità
+  - tipi e migliore efficacia offensiva STAB
+  - abilità normali e nascoste
+  - repertorio di mosse apprendibili
+  - altezza e peso
+- Punteggio comparativo basato sulle statistiche e sul vantaggio dei tipi
+- Evidenziazione automatica del valore migliore per ogni parametro
+- Apertura delle schede Pokémon direttamente dal confronto
+- Pulsante **Confronta nel Battle Dex** aggiunto a ogni scheda Pokémon
+- Interfaccia responsive pensata per smartphone
+- Gestione di caricamento, errori e indisponibilità temporanea del catalogo
 
-Il calcolo è basato esclusivamente sui tipi. Abilità, strumenti, Teracristal, mosse e condizioni di lotta possono modificare il risultato effettivo.
+Il Battle Dex è uno strumento informativo: non simula una lotta reale. Livello, natura, EV, IV, strumenti, abilità, mosse selezionate e regole del formato possono cambiare completamente il risultato.
 
-Tutte le funzioni delle Fasi 1–6 restano disponibili: Home, Pokédex, ricerca, filtri, schede dettagliate, shiny, statistiche, abilità, evoluzioni, varianti, Team Builder, Preferiti e Collezione personale.
+Tutte le funzioni delle Fasi 1–7 restano disponibili: Home, Pokédex, ricerca, filtri, schede dettagliate, shiny, statistiche, abilità, evoluzioni, varianti, Team Builder, Preferiti, Collezione personale e Calcolatore tipi.
 
 ## Aggiornamento su GitHub
 
 1. Scarica ed estrai lo ZIP.
-2. Apri la cartella `CapsuleDex-Fase-7`.
+2. Apri la cartella `CapsuleDex-Fase-8`.
 3. Carica **tutto il contenuto interno** nella radice del repository `CapsuleDex`.
 4. Sostituisci i file esistenti, soprattutto `index.html`, `manifest.webmanifest` e la cartella `assets`.
 5. Elimina dalla cartella `assets` del repository i vecchi file `index-*.js` e `index-*.css` che non sono presenti in questo pacchetto.

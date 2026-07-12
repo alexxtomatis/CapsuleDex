@@ -183,3 +183,12 @@ export function TrashIcon() {
     </svg>
   )
 }
+
+export function VersusIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 5h5l3 7 3-7h5M4 19h5l3-7 3 7h5" />
+      <circle cx="12" cy="12" r="2.2" />
+    </svg>
+  )
+}

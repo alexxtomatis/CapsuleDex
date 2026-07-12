@@ -41,6 +41,13 @@ export type EvolutionStep = {
 
 export type EvolutionPath = EvolutionStep[]
 
+export type PokemonMovePreview = {
+  id: string
+  name: string
+  method: string
+  level: number
+}
+
 export type PokemonVariant = {
   id: number
   name: string
@@ -64,6 +71,7 @@ export type PokemonDetailData = PokemonCardData & {
   abilities: PokemonAbility[]
   evolutionPaths: EvolutionPath[]
   variants: PokemonVariant[]
+  moves: PokemonMovePreview[]
 }
 
 export type RegionFilter = {

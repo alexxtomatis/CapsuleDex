@@ -1,6 +1,7 @@
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AppHeader } from './components/AppHeader'
 import { BottomNav } from './components/BottomNav'
+import { BattleView } from './components/BattleView'
 import { CollectionView } from './components/CollectionView'
 import { FavoritesView } from './components/FavoritesView'
 import { FeatureCard } from './components/FeatureCard'
@@ -23,7 +24,7 @@ const phaseLabels: Record<number, string> = {
   11: 'Database abilità',
 }
 
-type Screen = 'home' | 'pokedex' | 'detail' | 'team' | 'favorites' | 'collection' | 'types'
+type Screen = 'home' | 'pokedex' | 'detail' | 'team' | 'favorites' | 'collection' | 'types' | 'battle'
 type DetailReturnScreen = Exclude<Screen, 'detail'>
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
   const [pokedexRegion, setPokedexRegion] = useState('all')
   const [selectedPokemonId, setSelectedPokemonId] = useState(6)
   const [typeCalculatorPokemonId, setTypeCalculatorPokemonId] = useState<number | null>(null)
+  const [battlePokemonId, setBattlePokemonId] = useState<number | null>(null)
   const [activeNav, setActiveNav] = useState('home')
   const [toast, setToast] = useState('')
   const toastTimer = useRef<number | null>(null)
@@ -101,6 +103,13 @@ function App() {
     goToTop()
   }
 
+  function openBattle(pokemonId: number | null = null) {
+    setBattlePokemonId(pokemonId)
+    setActiveNav('home')
+    setScreen('battle')
+    goToTop()
+  }
+
   function openPokemon(id: number, returnScreen?: DetailReturnScreen) {
     setSelectedPokemonId(id)
     if (returnScreen) setDetailReturnScreen(returnScreen)
@@ -133,6 +142,10 @@ function App() {
     }
     if (feature.id === 'types') {
       openTypeCalculator()
+      return
+    }
+    if (feature.id === 'battle') {
+      openBattle()
       return
     }
     const label = phaseLabels[feature.phase] ?? feature.title
@@ -362,7 +375,7 @@ function App() {
                     </p>
                     <h2 id="explore-title">Esplora CapsuleDex</h2>
                   </div>
-                  <span className="progress-chip">7 / 14</span>
+                  <span className="progress-chip">8 / 14</span>
                 </div>
 
                 <div className="feature-grid">
@@ -377,15 +390,15 @@ function App() {
                   <h2 id="highlight-title">In evidenza</h2>
                   <button type="button" onClick={() => showToast('La roadmap è inclusa nel file ROADMAP.md.')}>Roadmap</button>
                 </div>
-                <article className="highlight-card highlight-card--types">
-                  <div className="highlight-badge">FASE 7</div>
+                <article className="highlight-card highlight-card--battle">
+                  <div className="highlight-badge">FASE 8</div>
                   <div>
                     <p>Nuova funzione disponibile</p>
-                    <h3>Calcolatore tipi</h3>
-                    <span>Analizza debolezze, resistenze e immunità di ogni Pokémon o combinazione di tipi.</span>
+                    <h3>Battle Dex</h3>
+                    <span>Confronta due Pokémon per statistiche, tipi, abilità, velocità, BST e mosse apprendibili.</span>
                   </div>
-                  <div className="completion-ring completion-ring--phase-seven" aria-label="Fase 7 completata">
-                    <strong>7/14</strong>
+                  <div className="completion-ring completion-ring--phase-eight" aria-label="Fase 8 completata">
+                    <strong>8/14</strong>
                   </div>
                 </article>
               </section>
@@ -462,6 +475,19 @@ function App() {
             />
           )}
 
+          {screen === 'battle' && (
+            <BattleView
+              initialPokemonId={battlePokemonId}
+              onBack={() => {
+                setScreen('home')
+                setActiveNav('home')
+                goToTop()
+              }}
+              onOpenPokemon={(id) => openPokemon(id, 'battle')}
+              onToast={showToast}
+            />
+          )}
+
           {screen === 'team' && (
             <TeamView
               teams={teams}
@@ -502,6 +528,7 @@ function App() {
               onAddToCollection={(name) => addPokemonToCollection(selectedPokemonId, name)}
               onOpenCollection={openCollection}
               onOpenTypeCalculator={() => openTypeCalculator(selectedPokemonId)}
+              onOpenBattle={() => openBattle(selectedPokemonId)}
               onToggleCollectionTrait={(trait, name) => toggleCollectionTrait(selectedPokemonId, trait, name)}
             />
           )}

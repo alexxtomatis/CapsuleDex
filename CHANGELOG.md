@@ -1,28 +1,35 @@
 # Changelog
 
-## 0.7.0 — Fase 7
+## 0.8.0 — Fase 8
 
 ### Aggiunto
 
-- Calcolatore difensivo dei tipi
-- Ricerca di un Pokémon per nome o numero
-- Selezione manuale di uno o due tipi
-- Calcolo di debolezze ×4 e ×2
-- Calcolo di resistenze ×0,5 e ×0,25
-- Calcolo delle immunità ×0
-- Matrice completa dei 18 tipi
-- Riepilogo numerico del profilo difensivo
-- Accesso diretto dalla barra inferiore
-- Collegamento dalle schede Pokémon
-- Storico locale delle ultime analisi
+- Battle Dex per confrontare due Pokémon
+- Ricerca indipendente per nome o numero Pokédex
+- Scambio rapido dei due sfidanti
+- Confronto delle sei statistiche base
+- Confronto del totale BST e della velocità
+- Analisi del migliore moltiplicatore offensivo dei tipi
+- Confronto di abilità normali e nascoste
+- Anteprima delle mosse apprendibili per livello e MT
+- Confronto di altezza e peso
+- Punteggio comparativo con valori migliori evidenziati
+- Apertura delle schede Pokémon dal Battle Dex
+- Accesso al Battle Dex da ogni scheda Pokémon
 
 ### Modificato
 
-- Home aggiornata alla Fase 7
-- Nuova carta Calcolatore tipi nella griglia delle funzioni
-- Barra inferiore aggiornata con la voce Tipi
-- Schede Pokémon integrate con il comando “Analizza debolezze”
-- Versione del progetto aggiornata a `0.7.0`
+- Home aggiornata alla Fase 8
+- Nuova carta Battle Dex nella griglia delle funzioni
+- PokéAPI service esteso con il repertorio delle mosse apprendibili
+- Versione del progetto aggiornata a `0.8.0`
+
+## 0.7.0 — Fase 7
+
+- Calcolatore difensivo dei tipi
+- Ricerca Pokémon e selezione manuale di uno o due tipi
+- Debolezze, resistenze, immunità e matrice completa dei 18 tipi
+- Collegamento dalle schede Pokémon e storico locale delle analisi
 
 ## 0.6.0 — Fase 6
 
