@@ -67,10 +67,22 @@
 - [x] **Fase 12 — Evoluzioni avanzate**
   - Atlante evolutivo ricercabile
   - Alberi completi e ramificazioni
-  - Livelli, strumenti, scambi, felicità, affetto, orari e meteo
-  - Mosse, luoghi, squadra, statistiche e condizioni speciali
-  - Filtri per metodo e collegamenti a Pokémon, strumenti e mosse
+  - Requisiti avanzati e collegamenti alle altre sezioni
   - Storico locale e copia del riepilogo
 
-- [ ] **Fase 13 — Modalità offline**
+- [x] **Fase 13 — Modalità offline**
+  - Service worker e app shell offline
+  - Cache automatica di dati PokéAPI e immagini
+  - Download di ricerca, filtri e Pokémon personali
+  - Indicatore di connessione e statistiche della cache
+  - Installazione PWA
+  - Backup e ripristino dei salvataggi
+  - Pulizia selettiva della cache
+
 - [ ] **Fase 14 — Rifinitura e pubblicazione**
+  - Revisione completa dell’interfaccia
+  - Accessibilità e prestazioni
+  - Animazioni e transizioni finali
+  - Gestione aggiornamenti e cache definitiva
+  - Test multipiattaforma
+  - Documentazione e rilascio 1.0

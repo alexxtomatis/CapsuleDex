@@ -1,7 +1,7 @@
 {
   "name": "CapsuleDex",
   "short_name": "CapsuleDex",
-  "description": "Pokédex, squadre, collezione e database completi di mosse, strumenti, abilità ed evoluzioni Pokémon.",
+  "description": "Pokédex, squadre, collezione, database completi e modalità offline installabile.",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",

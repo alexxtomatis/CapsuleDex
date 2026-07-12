@@ -1,38 +1,39 @@
 # Changelog
 
-## 0.12.0 — Fase 12
+## 0.13.0 — Fase 13
 
 ### Aggiunto
 
-- Atlante evolutivo dedicato
-- Ricerca per nome o numero Pokédex
-- Suggerimenti automatici basati sul catalogo delle specie
-- Alberi evolutivi completi con ramificazioni
-- Nomi italiani delle specie quando disponibili
-- Riepilogo di specie, stadi e percorsi finali
-- Requisiti evolutivi dettagliati per livello, strumenti e scambi
-- Supporto a felicità, affetto, giorno, notte e pioggia
-- Supporto a mosse conosciute, tipi di mossa e luoghi
-- Supporto a Pokémon o tipi presenti in squadra
-- Supporto a statistiche relative, genere e condizioni speciali
-- Indicazione degli strumenti collegati ai Baby Pokémon
-- Filtri visuali per metodo evolutivo
-- Collegamenti alle schede Pokémon
-- Collegamenti al Database strumenti e al Database mosse
-- Pulsante Atlante evolutivo nelle schede Pokémon
-- Catene consigliate e storico locale delle consultazioni
-- Copia rapida del riepilogo della catena
-- Cache in memoria delle catene e dei dati delle specie
+- Modalità offline dedicata accessibile dalla Home
+- Service worker con precache dell’app compilata
+- Cache automatica delle risposte PokéAPI
+- Cache automatica di artwork e immagini Pokémon
+- Fallback offline per la navigazione dell’app
+- Indicatore globale della perdita di connessione
+- Download del catalogo nazionale e dei filtri dei 18 tipi
+- Preparazione offline dei Pokémon presenti in squadre, preferiti e collezione
+- Pacchetto iniziale di Pokémon iconici in assenza di dati personali
+- Download di schede, specie, abilità, evoluzioni e immagini
+- Statistiche sulle risorse memorizzate e sullo spazio utilizzato
+- Pulizia selettiva dei dati offline senza cancellare i salvataggi
+- Esportazione dei salvataggi CapsuleDex in JSON
+- Importazione e ripristino dei backup
+- Installazione PWA tramite browser compatibili
+- Rilevamento della modalità standalone
+- Rilevamento degli aggiornamenti del service worker
 
 ### Modificato
 
-- Home aggiornata alla Fase 12
-- Nuova carta Evoluzioni resa operativa
-- Indicatore di avanzamento aggiornato a `12 / 14`
-- Servizio PokéAPI esteso con alberi e requisiti evolutivi strutturati
-- Requisiti mostrati nelle schede Pokémon tradotti e arricchiti
-- Descrizione della web app aggiornata
-- Versione del progetto aggiornata a `0.12.0`
+- Home aggiornata alla Fase 13
+- Nuova carta Modalità offline resa operativa
+- Indicatore di avanzamento aggiornato a `13 / 14`
+- Manifest aggiornato per descrivere l’esperienza offline installabile
+- Versione del progetto aggiornata a `0.13.0`
+- Documentazione aggiornata con limiti e istruzioni della cache
+
+## 0.12.0 — Fase 12
+
+- Atlante evolutivo con alberi completi, ramificazioni e requisiti avanzati
 
 ## 0.11.0 — Fase 11
 

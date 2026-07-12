@@ -11,6 +11,7 @@ import { FeatureCard } from './components/FeatureCard'
 import { SearchIcon } from './components/Icon'
 import { PokedexView } from './components/PokedexView'
 import { MoveView } from './components/MoveView'
+import { OfflineView } from './components/OfflineView'
 import { PokemonDetailView } from './components/PokemonDetailView'
 import { TeamView } from './components/TeamView'
 import { TypeCalculatorView } from './components/TypeCalculatorView'
@@ -25,11 +26,10 @@ import { createTeamId, loadActiveTeamId, loadTeams, saveActiveTeamId, saveTeams 
 import type { CollectionEntry, CollectionTrait, FavoriteEntry, Feature, PokemonTeam } from './types'
 
 const phaseLabels: Record<number, string> = {
-  6: 'Collezione personale',
-  9: 'Database mosse',
+  14: 'Rifinitura finale',
 }
 
-type Screen = 'home' | 'pokedex' | 'detail' | 'team' | 'favorites' | 'collection' | 'types' | 'battle' | 'moves' | 'items' | 'abilities' | 'evolutions'
+type Screen = 'home' | 'pokedex' | 'detail' | 'team' | 'favorites' | 'collection' | 'types' | 'battle' | 'moves' | 'items' | 'abilities' | 'evolutions' | 'offline'
 type DetailReturnScreen = Exclude<Screen, 'detail'>
 
 function App() {
@@ -48,6 +48,7 @@ function App() {
   const [selectedEvolutionPokemonId, setSelectedEvolutionPokemonId] = useState<number | null>(null)
   const [activeNav, setActiveNav] = useState('home')
   const [toast, setToast] = useState('')
+  const [isOnline, setIsOnline] = useState(navigator.onLine)
   const toastTimer = useRef<number | null>(null)
 
   const [collection, setCollection] = useState<CollectionEntry[]>(() => loadCollection())
@@ -69,11 +70,38 @@ function App() {
     [teams, activeTeamId],
   )
 
+  const personalPokemonIds = useMemo(() => [...new Set([
+    ...favorites.map((entry) => entry.pokemonId),
+    ...collection.map((entry) => entry.pokemonId),
+    ...teams.flatMap((team) => team.pokemonIds),
+  ])], [favorites, collection, teams])
+
   const showToast = useCallback((message: string) => {
     setToast(message)
     if (toastTimer.current) window.clearTimeout(toastTimer.current)
     toastTimer.current = window.setTimeout(() => setToast(''), 2800)
   }, [])
+
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true)
+      showToast('Connessione ripristinata.')
+    }
+    const handleOffline = () => {
+      setIsOnline(false)
+      showToast('Modalità offline attiva: userò i dati già salvati.')
+    }
+    const handleUpdate = () => showToast('È disponibile un aggiornamento di CapsuleDex: ricarica la pagina.')
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+    window.addEventListener('capsuledex:update-ready', handleUpdate)
+    return () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+      window.removeEventListener('capsuledex:update-ready', handleUpdate)
+    }
+  }, [showToast])
+
 
   function goToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -150,6 +178,12 @@ function App() {
     goToTop()
   }
 
+  function openOffline() {
+    setActiveNav('home')
+    setScreen('offline')
+    goToTop()
+  }
+
   function openPokemon(id: number, returnScreen?: DetailReturnScreen) {
     setSelectedPokemonId(id)
     if (returnScreen) setDetailReturnScreen(returnScreen)
@@ -202,6 +236,10 @@ function App() {
     }
     if (feature.id === 'evolutions') {
       openEvolutions()
+      return
+    }
+    if (feature.id === 'offline') {
+      openOffline()
       return
     }
     const label = phaseLabels[feature.phase] ?? feature.title
@@ -381,6 +419,11 @@ function App() {
         <div className="ambient ambient--two" />
 
         <div className="content">
+          {!isOnline && screen !== 'offline' && (
+            <button type="button" className="global-offline-banner" onClick={openOffline}>
+              <span>⌁</span> Modalità offline attiva · Apri gestione offline
+            </button>
+          )}
           {screen === 'home' && (
             <>
               <AppHeader onNotify={() => showToast('Nessuna nuova notifica.')} />
@@ -431,7 +474,7 @@ function App() {
                     </p>
                     <h2 id="explore-title">Esplora CapsuleDex</h2>
                   </div>
-                  <span className="progress-chip">12 / 14</span>
+                  <span className="progress-chip">13 / 14</span>
                 </div>
 
                 <div className="feature-grid">
@@ -446,15 +489,15 @@ function App() {
                   <h2 id="highlight-title">In evidenza</h2>
                   <button type="button" onClick={() => showToast('La roadmap è inclusa nel file ROADMAP.md.')}>Roadmap</button>
                 </div>
-                <article className="highlight-card highlight-card--evolutions">
-                  <div className="highlight-badge">FASE 12</div>
+                <article className="highlight-card highlight-card--offline">
+                  <div className="highlight-badge">FASE 13</div>
                   <div>
                     <p>Nuova funzione disponibile</p>
-                    <h3>Evoluzioni avanzate</h3>
-                    <span>Esplora alberi completi, ramificazioni e requisiti come pietre, scambi, felicità, orari e meteo.</span>
+                    <h3>Modalità offline</h3>
+                    <span>Installa l’app, conserva i dati consultati, prepara i tuoi Pokémon e proteggi i salvataggi con backup locali.</span>
                   </div>
-                  <div className="completion-ring completion-ring--phase-twelve" aria-label="Fase 11 completata">
-                    <strong>12/14</strong>
+                  <div className="completion-ring completion-ring--phase-thirteen" aria-label="Fase 13 completata">
+                    <strong>13/14</strong>
                   </div>
                 </article>
               </section>
@@ -586,6 +629,18 @@ function App() {
               onOpenItem={(itemSlug) => openItems(itemSlug)}
               onOpenMove={(moveSlug) => openMoves(moveSlug)}
               onSelectionChange={setSelectedEvolutionPokemonId}
+              onToast={showToast}
+            />
+          )}
+
+          {screen === 'offline' && (
+            <OfflineView
+              personalPokemonIds={personalPokemonIds}
+              onBack={() => {
+                setScreen('home')
+                setActiveNav('home')
+                goToTop()
+              }}
               onToast={showToast}
             />
           )}

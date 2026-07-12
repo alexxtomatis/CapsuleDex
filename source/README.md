@@ -1,53 +1,54 @@
-# CapsuleDex — Fase 12
+# CapsuleDex — Fase 13
 
 Questa cartella contiene la versione **già compilata** di CapsuleDex, pronta per GitHub Pages. Il progetto React + TypeScript modificabile è incluso nella cartella `source/` del pacchetto finale.
 
-## Novità della Fase 12 — Evoluzioni avanzate
+## Novità della Fase 13 — Modalità offline
 
-- Nuovo **Atlante evolutivo** accessibile dalla Home
-- Ricerca di un Pokémon per nome o numero Pokédex
-- Suggerimenti automatici durante la digitazione
-- Albero evolutivo completo con:
-  - stadi della famiglia
-  - ramificazioni alternative
-  - Baby Pokémon
-  - nomi italiani quando disponibili
-  - immagini ufficiali
-- Requisiti dettagliati per:
-  - livello
-  - pietre e altri strumenti
-  - strumenti tenuti
-  - scambio e scambi speciali
-  - felicità e affetto
-  - giorno e notte
-  - pioggia
-  - mosse conosciute e tipi di mossa
-  - luoghi specifici
-  - Pokémon o tipi presenti in squadra
-  - rapporto tra Attacco e Difesa
-  - genere e condizioni speciali
-- Filtro visuale per evidenziare un metodo evolutivo
-- Indicazione dello strumento collegato ai Baby Pokémon
-- Collegamenti diretti:
-  - alle schede Pokémon
-  - al Database strumenti
-  - al Database mosse
-- Apertura dell’Atlante direttamente da ogni scheda Pokémon
-- Catene consigliate per provare subito le ramificazioni più interessanti
-- Storico locale delle catene consultate
-- Copia rapida del riepilogo evolutivo
-- Cache in memoria delle catene già caricate
+- Nuova schermata **Modalità offline** accessibile dalla Home
+- Service worker dedicato per:
+  - avvio dell’app senza connessione dopo il primo caricamento
+  - cache automatica delle pagine e risorse visitate
+  - cache persistente delle risposte PokéAPI
+  - cache delle immagini e degli artwork Pokémon
+  - fallback alla Home quando la rete non è disponibile
+- Indicatore globale quando CapsuleDex perde la connessione
+- Download manuale dei dati di ricerca:
+  - catalogo nazionale
+  - filtri dei 18 tipi
+- Download manuale dei Pokémon personali presenti in:
+  - squadre
+  - preferiti
+  - collezione
+- Pacchetto iniziale di Pokémon iconici quando non sono presenti dati personali
+- Preparazione offline di schede, specie, abilità, evoluzioni e immagini
+- Pannello con numero di risorse, dati PokéAPI, immagini e spazio utilizzato
+- Pulizia della cache senza cancellare squadre, preferiti o collezione
+- Esportazione dei salvataggi in un file JSON
+- Importazione e ripristino di un backup CapsuleDex
+- Installazione come PWA dal browser o dalla schermata Home
+- Gestione degli aggiornamenti del service worker
 
-Tutte le funzioni delle Fasi 1–11 restano disponibili: Home, Pokédex, schede dettagliate, Team Builder, Preferiti, Collezione personale, Calcolatore tipi, Battle Dex e database di mosse, strumenti e abilità.
+Tutte le funzioni delle Fasi 1–12 restano disponibili: Home, Pokédex, schede dettagliate, Team Builder, Preferiti, Collezione personale, Calcolatore tipi, Battle Dex e database di mosse, strumenti, abilità ed evoluzioni.
+
+## Limiti reali della modalità offline
+
+CapsuleDex **non scarica automaticamente l’intero database Pokémon**. Senza connessione funzionano:
+
+- l’app e la sua interfaccia;
+- squadre, preferiti, collezione e cronologie locali;
+- dati e immagini già consultati;
+- pacchetti preparati manualmente nella schermata Offline.
+
+Una pagina mai aperta o mai preparata richiederà internet. Alcuni browser possono inoltre eliminare la cache quando lo spazio sul dispositivo è insufficiente.
 
 ## Aggiornamento su GitHub
 
 1. Scarica ed estrai lo ZIP.
-2. Apri la cartella `CapsuleDex-Fase-12`.
-3. Carica **tutto il contenuto interno** nella radice del repository `CapsuleDex`.
-4. Sostituisci i file esistenti, soprattutto `index.html`, `manifest.webmanifest` e la cartella `assets`.
-5. Elimina dalla cartella `assets` del repository i vecchi file `index-*.js` e `index-*.css` non presenti nel nuovo pacchetto.
-6. Premi **Commit changes**.
+2. Apri la cartella `CapsuleDex-Fase-13`.
+3. Nella cartella `assets` del repository elimina i vecchi file `index-*.js` e `index-*.css`.
+4. Carica **tutto il contenuto interno** nella radice del repository `CapsuleDex`.
+5. Assicurati di caricare anche il nuovo file `sw.js`.
+6. Sostituisci i file esistenti e premi **Commit changes**.
 7. Lascia GitHub Pages impostato su:
    - Source: `Deploy from a branch`
    - Branch: `main`
@@ -56,19 +57,20 @@ Tutte le funzioni delle Fasi 1–11 restano disponibili: Home, Pokédex, schede 
 
 `https://alexxtomatis.github.io/CapsuleDex/`
 
-Se compare ancora la versione precedente, esegui un ricaricamento forzato oppure elimina i dati del sito per `alexxtomatis.github.io`.
+Dopo l’aggiornamento, ricarica la pagina. Se il browser mostra ancora la Fase 12, chiudi e riapri CapsuleDex oppure esegui un aggiornamento forzato. Non cancellare i dati del sito senza prima esportare un backup, perché verrebbero rimossi anche i salvataggi personali.
 
 ## File principali
 
 - `index.html`: applicazione compilata
+- `sw.js`: service worker per app shell, dati API e immagini offline
+- `manifest.webmanifest`: configurazione dell’app installabile
 - `assets/`: JavaScript, CSS, icone e marchio
 - `.nojekyll`: evita elaborazioni indesiderate di GitHub Pages
 - `source/`: progetto React + TypeScript
-- `source/src/components/EvolutionView.tsx`: Atlante evolutivo
-- `source/src/services/pokeapi.ts`: caricamento e normalizzazione delle catene
-- `source/src/data/moveIndex.ts`: indice locale delle mosse
-- `source/src/data/itemIndex.ts`: indice locale degli strumenti
-- `source/src/data/abilityIndex.ts`: indice locale delle abilità
+- `source/src/components/OfflineView.tsx`: pannello della modalità offline
+- `source/src/services/offline.ts`: installazione, cache, download e backup
+- `source/public/sw.js`: sorgente del service worker
+- `source/src/services/pokeapi.ts`: accesso e normalizzazione dei dati PokéAPI
 - `ROADMAP.md`: avanzamento delle fasi
 - `CHANGELOG.md`: modifiche della versione
 
@@ -87,10 +89,12 @@ npm run lint
 npm run build
 ```
 
-## Salvataggio locale
+Il service worker funziona su `localhost` oppure tramite HTTPS. Non viene eseguito aprendo direttamente `index.html` dal file system.
 
-Collezione, preferiti, squadre, ultime analisi dei tipi e catene evolutive recenti vengono salvati nel browser tramite `localStorage`. Non sono sincronizzati tra dispositivi o account diversi. La cancellazione dei dati del sito elimina anche i contenuti salvati.
+## Salvataggi e privacy
+
+I dati personali dell’app restano nel browser tramite `localStorage`. Il backup esportato contiene solo dati di CapsuleDex presenti sul dispositivo. Non esiste sincronizzazione automatica tra account o dispositivi.
 
 ## Dati e note legali
 
-CapsuleDex è un progetto fan-made non ufficiale. Le catene e i requisiti evolutivi vengono caricati tramite PokéAPI; alcune condizioni possono variare tra giochi e generazioni. Pokémon e i relativi nomi appartengono ai rispettivi titolari.
+CapsuleDex è un progetto fan-made non ufficiale. Dati e immagini vengono caricati tramite PokéAPI e il relativo archivio sprite. Pokémon e i relativi nomi appartengono ai rispettivi titolari.
