@@ -1,7 +1,7 @@
 {
   "name": "CapsuleDex",
   "short_name": "CapsuleDex",
-  "description": "Pokédex, Team Builder, preferiti e collezione personale dei Pokémon.",
+  "description": "Pokédex, squadre, collezione e calcolatore dei tipi Pokémon.",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",

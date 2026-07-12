@@ -58,10 +58,11 @@ type DetailProps = {
   collectionEntry?: CollectionEntry
   onAddToCollection: (name?: string) => void
   onOpenCollection: () => void
+  onOpenTypeCalculator: () => void
   onToggleCollectionTrait: (trait: CollectionTrait, name?: string) => void
 }
 
-export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, isInTeam, isTeamFull, onAddToTeam, onOpenTeam, isFavorite, onToggleFavorite, collectionEntry, onAddToCollection, onOpenCollection, onToggleCollectionTrait }: DetailProps) {
+export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, isInTeam, isTeamFull, onAddToTeam, onOpenTeam, isFavorite, onToggleFavorite, collectionEntry, onAddToCollection, onOpenCollection, onOpenTypeCalculator, onToggleCollectionTrait }: DetailProps) {
   const [pokemon, setPokemon] = useState<PokemonDetailData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -265,6 +266,17 @@ export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, i
             <small>{isInTeam ? 'Apri il Team Builder' : isTeamFull ? 'Rimuovi prima un Pokémon' : 'Salvataggio automatico'}</small>
           </span>
           <b>{isInTeam ? '→' : '+'}</b>
+        </button>
+      </div>
+
+      <div className="detail-type-action">
+        <button type="button" onClick={onOpenTypeCalculator}>
+          <ChartIcon />
+          <span>
+            <strong>Analizza debolezze</strong>
+            <small>Apri il calcolatore con i tipi di {displayName}</small>
+          </span>
+          <b>→</b>
         </button>
       </div>
 

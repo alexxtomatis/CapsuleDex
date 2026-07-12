@@ -1,11 +1,11 @@
-import { CollectionIcon, GridIcon, HeartIcon, MoreIcon, UsersIcon } from './Icon'
+import { ChartIcon, CollectionIcon, GridIcon, HeartIcon, UsersIcon } from './Icon'
 
 const entries = [
   { id: 'home', label: 'Esplora', icon: <GridIcon /> },
   { id: 'favorites', label: 'Preferiti', icon: <HeartIcon /> },
   { id: 'team', label: 'Squadra', icon: <UsersIcon /> },
   { id: 'collection', label: 'Collezione', icon: <CollectionIcon /> },
-  { id: 'more', label: 'Altro', icon: <MoreIcon /> },
+  { id: 'types', label: 'Tipi', icon: <ChartIcon /> },
 ]
 
 type BottomNavProps = {

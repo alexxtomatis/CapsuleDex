@@ -8,6 +8,7 @@ import { SearchIcon } from './components/Icon'
 import { PokedexView } from './components/PokedexView'
 import { PokemonDetailView } from './components/PokemonDetailView'
 import { TeamView } from './components/TeamView'
+import { TypeCalculatorView } from './components/TypeCalculatorView'
 import { Toast } from './components/Toast'
 import { features, regions } from './data/features'
 import { loadCollection, saveCollection } from './services/collectionStorage'
@@ -22,7 +23,7 @@ const phaseLabels: Record<number, string> = {
   11: 'Database abilità',
 }
 
-type Screen = 'home' | 'pokedex' | 'detail' | 'team' | 'favorites' | 'collection'
+type Screen = 'home' | 'pokedex' | 'detail' | 'team' | 'favorites' | 'collection' | 'types'
 type DetailReturnScreen = Exclude<Screen, 'detail'>
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
   const [pokedexQuery, setPokedexQuery] = useState('')
   const [pokedexRegion, setPokedexRegion] = useState('all')
   const [selectedPokemonId, setSelectedPokemonId] = useState(6)
+  const [typeCalculatorPokemonId, setTypeCalculatorPokemonId] = useState<number | null>(null)
   const [activeNav, setActiveNav] = useState('home')
   const [toast, setToast] = useState('')
   const toastTimer = useRef<number | null>(null)
@@ -92,6 +94,13 @@ function App() {
     goToTop()
   }
 
+  function openTypeCalculator(pokemonId: number | null = null) {
+    setTypeCalculatorPokemonId(pokemonId)
+    setActiveNav('types')
+    setScreen('types')
+    goToTop()
+  }
+
   function openPokemon(id: number, returnScreen?: DetailReturnScreen) {
     setSelectedPokemonId(id)
     if (returnScreen) setDetailReturnScreen(returnScreen)
@@ -122,6 +131,10 @@ function App() {
       openCollection()
       return
     }
+    if (feature.id === 'types') {
+      openTypeCalculator()
+      return
+    }
     const label = phaseLabels[feature.phase] ?? feature.title
     showToast(`${label}: prevista nella Fase ${feature.phase}.`)
   }
@@ -143,6 +156,10 @@ function App() {
     }
     if (id === 'collection') {
       openCollection()
+      return
+    }
+    if (id === 'types') {
+      openTypeCalculator()
       return
     }
     showToast(`${label} sarà attivato in una fase successiva.`)
@@ -345,7 +362,7 @@ function App() {
                     </p>
                     <h2 id="explore-title">Esplora CapsuleDex</h2>
                   </div>
-                  <span className="progress-chip">6 / 14</span>
+                  <span className="progress-chip">7 / 14</span>
                 </div>
 
                 <div className="feature-grid">
@@ -360,15 +377,15 @@ function App() {
                   <h2 id="highlight-title">In evidenza</h2>
                   <button type="button" onClick={() => showToast('La roadmap è inclusa nel file ROADMAP.md.')}>Roadmap</button>
                 </div>
-                <article className="highlight-card highlight-card--collection">
-                  <div className="highlight-badge">FASE 6</div>
+                <article className="highlight-card highlight-card--types">
+                  <div className="highlight-badge">FASE 7</div>
                   <div>
                     <p>Nuova funzione disponibile</p>
-                    <h3>Collezione personale</h3>
-                    <span>Registra le catture e contrassegna Shiny, Alpha, Gigamax, Paradox e Leggendari.</span>
+                    <h3>Calcolatore tipi</h3>
+                    <span>Analizza debolezze, resistenze e immunità di ogni Pokémon o combinazione di tipi.</span>
                   </div>
-                  <div className="completion-ring completion-ring--phase-six" aria-label="Fase 6 completata">
-                    <strong>6/14</strong>
+                  <div className="completion-ring completion-ring--phase-seven" aria-label="Fase 7 completata">
+                    <strong>7/14</strong>
                   </div>
                 </article>
               </section>
@@ -431,6 +448,20 @@ function App() {
             />
           )}
 
+          {screen === 'types' && (
+            <TypeCalculatorView
+              initialPokemonId={typeCalculatorPokemonId}
+              onBack={() => {
+                setScreen('home')
+                setActiveNav('home')
+                goToTop()
+              }}
+              onOpenPokemon={(id) => openPokemon(id, 'types')}
+              onSelectionChange={setTypeCalculatorPokemonId}
+              onToast={showToast}
+            />
+          )}
+
           {screen === 'team' && (
             <TeamView
               teams={teams}
@@ -456,7 +487,7 @@ function App() {
               pokemonId={selectedPokemonId}
               onBack={() => {
                 setScreen(detailReturnScreen)
-                setActiveNav(detailReturnScreen === 'team' ? 'team' : detailReturnScreen === 'favorites' ? 'favorites' : detailReturnScreen === 'collection' ? 'collection' : 'home')
+                setActiveNav(detailReturnScreen === 'team' ? 'team' : detailReturnScreen === 'favorites' ? 'favorites' : detailReturnScreen === 'collection' ? 'collection' : detailReturnScreen === 'types' ? 'types' : 'home')
                 goToTop()
               }}
               onOpenPokemon={(id) => openPokemon(id)}
@@ -470,6 +501,7 @@ function App() {
               collectionEntry={collectionMap.get(selectedPokemonId)}
               onAddToCollection={(name) => addPokemonToCollection(selectedPokemonId, name)}
               onOpenCollection={openCollection}
+              onOpenTypeCalculator={() => openTypeCalculator(selectedPokemonId)}
               onToggleCollectionTrait={(trait, name) => toggleCollectionTrait(selectedPokemonId, trait, name)}
             />
           )}

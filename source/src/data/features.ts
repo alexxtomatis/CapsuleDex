@@ -1,6 +1,6 @@
 import type { Feature, RegionFilter, TypeFilter } from '../types'
 
-export const CURRENT_PHASE = 6
+export const CURRENT_PHASE = 7
 
 export const regions: RegionFilter[] = [
   { id: 'all', label: 'Tutti', min: 1, max: Number.MAX_SAFE_INTEGER },
@@ -45,6 +45,7 @@ export const features: Feature[] = [
   { id: 'team', title: 'La mia squadra', subtitle: 'Crea e salva i tuoi team', icon: '◉', accent: 'blue', phase: 4 },
   { id: 'favorites', title: 'Preferiti', subtitle: 'La tua raccolta personale', icon: '♥', accent: 'pink', phase: 5 },
   { id: 'collection', title: 'Collezione', subtitle: 'Catture e forme speciali', icon: '⬡', accent: 'cyan', phase: 6 },
+  { id: 'types', title: 'Calcolatore tipi', subtitle: 'Debolezze e resistenze', icon: '◇', accent: 'purple', phase: 7 },
 ]
 
 export const italianTypeNames: Record<string, string> = {
