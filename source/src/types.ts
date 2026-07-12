@@ -156,3 +156,41 @@ export type MoveDetailData = MoveIndexItem & {
   statChanges: MoveStatChange[]
   learnedByPokemon: MovePokemonPreview[]
 }
+
+export type ItemIndexItem = {
+  id: number
+  slug: string
+  name: string
+  englishName: string
+  category: string
+  pocket: string
+  cost: number
+  flingPower: number | null
+}
+
+export type ItemHeldPokemonPreview = {
+  id: number
+  name: string
+  image: string
+  rarity: number | null
+  versions: string[]
+}
+
+export type ItemMachinePreview = {
+  id: number
+  moveSlug: string
+  moveName: string
+  versionGroup: string
+}
+
+export type ItemDetailData = ItemIndexItem & {
+  image: string | null
+  description: string
+  effect: string
+  attributes: string[]
+  flingEffect: string | null
+  generation: number | null
+  heldByPokemon: ItemHeldPokemonPreview[]
+  machines: ItemMachinePreview[]
+  babyTrigger: boolean
+}

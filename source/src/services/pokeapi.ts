@@ -1,7 +1,11 @@
 import { statLabels } from '../data/features'
-import { moveById } from '../data/moveIndex'
+import { itemById } from '../data/itemIndex'
+import { moveById, moveBySlug } from '../data/moveIndex'
 import type {
   EvolutionPath,
+  ItemDetailData,
+  ItemHeldPokemonPreview,
+  ItemMachinePreview,
   MoveDetailData,
   MovePokemonPreview,
   EvolutionStep,
@@ -628,5 +632,184 @@ export async function getMoveDetail(id: number, signal?: AbortSignal): Promise<M
   }
 
   moveDetailCache.set(id, detail)
+  return detail
+}
+
+type ItemApiResponse = {
+  id: number
+  name: string
+  cost: number
+  fling_power: number | null
+  fling_effect: { name: string; url: string } | null
+  attributes: Array<{ name: string; url: string }>
+  category: { name: string; url: string }
+  effect_entries: Array<{
+    effect: string
+    short_effect: string
+    language: { name: string }
+  }>
+  flavor_text_entries: Array<{
+    text: string
+    language: { name: string }
+    version_group: { name: string }
+  }>
+  game_indices: Array<{
+    game_index: number
+    generation: { name: string; url: string }
+  }>
+  names: Array<{ name: string; language: { name: string } }>
+  sprites: { default: string | null }
+  held_by_pokemon: Array<{
+    pokemon: { name: string; url: string }
+    version_details: Array<{
+      rarity: number
+      version: { name: string; url: string }
+    }>
+  }>
+  baby_trigger_for: { url: string } | null
+  machines: Array<{
+    machine: { url: string }
+    version_group: { name: string; url: string }
+  }>
+}
+
+type ItemFlingEffectResponse = {
+  effect_entries: Array<{
+    effect: string
+    language: { name: string }
+  }>
+}
+
+type MachineApiResponse = {
+  id: number
+  item: { name: string; url: string }
+  move: { name: string; url: string }
+  version_group: { name: string; url: string }
+}
+
+const itemDetailCache = new Map<number, ItemDetailData>()
+
+const itemAttributeNames: Record<string, string> = {
+  countable: 'Contabile nella Borsa',
+  consumable: 'Consumabile',
+  'usable-overworld': 'Utilizzabile fuori dalla lotta',
+  'usable-in-battle': 'Utilizzabile in lotta',
+  holdable: 'Assegnabile a un Pokémon',
+  'holdable-passive': 'Effetto passivo se assegnato',
+  'holdable-active': 'Effetto attivo se assegnato',
+  underground: 'Legato ai Sotterranei',
+}
+
+function cleanApiEffect(value: string): string {
+  return cleanText(value
+    .replace(/\$effect_chance/g, 'una certa probabilità')
+    .replace(/\[([^\]]+)\]\{[^}]+\}/g, '$1'))
+}
+
+function formatVersionName(value: string): string {
+  return titleCasePokemonName(value)
+    .replace(/Omega Ruby/g, 'Rubino Omega')
+    .replace(/Alpha Sapphire/g, 'Zaffiro Alpha')
+    .replace(/Ultra Sun/g, 'Ultrasole')
+    .replace(/Ultra Moon/g, 'Ultraluna')
+    .replace(/Brilliant Diamond/g, 'Diamante Lucente')
+    .replace(/Shining Pearl/g, 'Perla Splendente')
+    .replace(/Lets Go Pikachu/g, "Let's Go, Pikachu!")
+    .replace(/Lets Go Eevee/g, "Let's Go, Eevee!")
+}
+
+async function getMachinePreview(
+  entry: ItemApiResponse['machines'][number],
+  signal?: AbortSignal,
+): Promise<ItemMachinePreview | null> {
+  try {
+    const machine = await fetchJson<MachineApiResponse>(entry.machine.url, signal)
+    const indexedMove = moveBySlug.get(machine.move.name)
+    return {
+      id: machine.id,
+      moveSlug: machine.move.name,
+      moveName: indexedMove?.name ?? titleCasePokemonName(machine.move.name),
+      versionGroup: formatVersionName(entry.version_group.name || machine.version_group.name),
+    }
+  } catch (error) {
+    if (signal?.aborted) throw error
+    return null
+  }
+}
+
+export async function getItemDetail(id: number, signal?: AbortSignal): Promise<ItemDetailData> {
+  const cached = itemDetailCache.get(id)
+  if (cached) return cached
+
+  const payload = await fetchJson<ItemApiResponse>(`${API_BASE}/item/${id}`, signal)
+  const indexEntry = itemById.get(payload.id)
+  const italianFlavor = [...payload.flavor_text_entries]
+    .reverse()
+    .find((entry) => entry.language.name === 'it')?.text
+  const englishFlavor = [...payload.flavor_text_entries]
+    .reverse()
+    .find((entry) => entry.language.name === 'en')?.text
+  const englishEffect = payload.effect_entries.find((entry) => entry.language.name === 'en')
+
+  let flingEffect: string | null = null
+  if (payload.fling_effect) {
+    try {
+      const flingPayload = await fetchJson<ItemFlingEffectResponse>(payload.fling_effect.url, signal)
+      const englishFling = flingPayload.effect_entries.find((entry) => entry.language.name === 'en')?.effect
+      flingEffect = englishFling ? cleanApiEffect(englishFling) : titleCasePokemonName(payload.fling_effect.name)
+    } catch (error) {
+      if (signal?.aborted) throw error
+      flingEffect = titleCasePokemonName(payload.fling_effect.name)
+    }
+  }
+
+  const machines = (await Promise.all(payload.machines.map((entry) => getMachinePreview(entry, signal))))
+    .filter((entry): entry is ItemMachinePreview => Boolean(entry))
+    .sort((a, b) => a.versionGroup.localeCompare(b.versionGroup, 'it'))
+
+  const heldByPokemon: ItemHeldPokemonPreview[] = payload.held_by_pokemon
+    .map((entry) => {
+      const pokemonId = extractId(entry.pokemon.url)
+      const rarities = entry.version_details.map((detail) => detail.rarity)
+      return {
+        id: pokemonId,
+        name: titleCasePokemonName(entry.pokemon.name),
+        image: officialArtwork(pokemonId),
+        rarity: rarities.length > 0 ? Math.max(...rarities) : null,
+        versions: [...new Set(entry.version_details.map((detail) => formatVersionName(detail.version.name)))],
+      }
+    })
+    .filter((entry) => Number.isFinite(entry.id) && entry.id > 0)
+    .sort((a, b) => a.id - b.id)
+
+  const generationIds = payload.game_indices
+    .map((entry) => extractId(entry.generation.url))
+    .filter((generation) => Number.isFinite(generation) && generation > 0)
+
+  const detail: ItemDetailData = {
+    id: payload.id,
+    slug: payload.name,
+    name: localizedName(payload.names, payload.name),
+    englishName: indexEntry?.englishName ?? titleCasePokemonName(payload.name),
+    category: indexEntry?.category ?? payload.category.name,
+    pocket: indexEntry?.pocket ?? 'misc',
+    cost: payload.cost,
+    flingPower: payload.fling_power,
+    image: payload.sprites.default,
+    description: cleanText(italianFlavor ?? englishFlavor ?? 'Descrizione non disponibile.'),
+    effect: cleanApiEffect(
+      englishEffect?.short_effect ?? englishEffect?.effect ?? italianFlavor ?? englishFlavor ?? 'Effetto non disponibile.',
+    ),
+    attributes: payload.attributes.map((attribute) => (
+      itemAttributeNames[attribute.name] ?? titleCasePokemonName(attribute.name)
+    )),
+    flingEffect,
+    generation: generationIds.length > 0 ? Math.min(...generationIds) : null,
+    heldByPokemon,
+    machines,
+    babyTrigger: Boolean(payload.baby_trigger_for),
+  }
+
+  itemDetailCache.set(id, detail)
   return detail
 }

@@ -1,50 +1,48 @@
-# CapsuleDex — Fase 9
+# CapsuleDex — Fase 10
 
 Questa cartella contiene la versione **già compilata** di CapsuleDex, pronta per GitHub Pages. Il progetto React + TypeScript modificabile è incluso nella cartella `source/`.
 
-## Novità della Fase 9 — Database mosse
+## Novità della Fase 10 — Database strumenti
 
-- Archivio di **937 mosse** indicizzate localmente per una ricerca immediata
+- Archivio locale con **2.221 strumenti** per una ricerca immediata
 - Nomi italiani e inglesi
-- Ricerca per nome italiano, nome inglese, identificatore API o numero della mossa
-- Filtri per:
-  - tipo
-  - categoria fisica, speciale o di stato
-  - generazione dalla I alla IX
-- Ordinamento per numero, nome, potenza, precisione e PP
-- Schede riepilogative con:
-  - potenza
-  - precisione
-  - PP
-  - tipo
-  - categoria
-  - generazione
-- Scheda completa della mossa con:
+- Ricerca per nome, identificatore API o numero
+- Filtri rapidi per:
+  - bacche
+  - Poké Ball
+  - rimedi
+  - MT e MN
+  - strumenti evolutivi
+  - strumenti da tenere
+  - strumenti lotta
+  - strumenti base
+- Filtri avanzati per tasca e categoria
+- Ordinamento per numero, nome, prezzo e potenza della mossa Lancio
+- Carte riepilogative con immagine, categoria, prezzo e potenza Lancio
+- Scheda completa dello strumento con:
   - descrizione
-  - effetto in lotta
-  - bersaglio
-  - priorità
-  - probabilità degli effetti secondari
-  - problemi di stato
-  - modifiche alle statistiche
-  - colpi multipli e durata
-  - cura, assorbimento e contraccolpo
-  - elenco dei Pokémon compatibili
-- Apertura delle schede Pokémon dall'elenco di compatibilità
-- Collegamento alle mosse direttamente dalle schede Pokémon
-- Copia rapida del riepilogo della mossa
-- Caricamento progressivo per mantenere fluida l'interfaccia su smartphone
-- Cache in memoria dei dettagli già consultati
+  - effetto
+  - tasca e categoria
+  - prezzo
+  - proprietà d'uso
+  - dati della mossa Lancio
+  - generazione disponibile nei dati
+  - Pokémon che possono tenerlo in natura
+  - mosse associate alle MT/MN
+- Collegamento dalle MT alle schede del Database mosse
+- Collegamento dai Pokémon possessori alle rispettive schede
+- Copia rapida del riepilogo
+- Caricamento progressivo e cache in memoria dei dettagli consultati
 
-Tutte le funzioni delle Fasi 1–8 restano disponibili: Home, Pokédex, schede dettagliate, Team Builder, Preferiti, Collezione personale, Calcolatore tipi e Battle Dex.
+Tutte le funzioni delle Fasi 1–9 restano disponibili: Home, Pokédex, schede dettagliate, Team Builder, Preferiti, Collezione personale, Calcolatore tipi, Battle Dex e Database mosse.
 
 ## Aggiornamento su GitHub
 
 1. Scarica ed estrai lo ZIP.
-2. Apri la cartella `CapsuleDex-Fase-9`.
+2. Apri la cartella `CapsuleDex-Fase-10`.
 3. Carica **tutto il contenuto interno** nella radice del repository `CapsuleDex`.
 4. Sostituisci i file esistenti, soprattutto `index.html`, `manifest.webmanifest` e la cartella `assets`.
-5. Elimina dalla cartella `assets` del repository i vecchi file `index-*.js` e `index-*.css` che non sono presenti in questo pacchetto.
+5. Elimina dalla cartella `assets` del repository i vecchi file `index-*.js` e `index-*.css` non presenti nel nuovo pacchetto.
 6. Premi **Commit changes**.
 7. Lascia GitHub Pages impostato su:
    - Source: `Deploy from a branch`
@@ -63,6 +61,8 @@ Se il browser mostra ancora la versione precedente, esegui un ricaricamento forz
 - `.nojekyll`: evita elaborazioni indesiderate di GitHub Pages
 - `source/`: progetto React + TypeScript
 - `source/src/data/moveIndex.ts`: indice locale delle mosse
+- `source/src/data/itemIndex.ts`: indice locale degli strumenti
+- `source/src/components/ItemView.tsx`: elenco e schede degli strumenti
 - `ROADMAP.md`: avanzamento delle fasi
 - `CHANGELOG.md`: modifiche della versione
 
@@ -87,4 +87,4 @@ Collezione, preferiti, squadre e ultime analisi dei tipi vengono salvati nel bro
 
 ## Dati e note legali
 
-CapsuleDex è un progetto fan-made non ufficiale. L'indice delle mosse deriva dai dati pubblici di PokéAPI; i dettagli e le immagini vengono caricati tramite PokéAPI e il relativo repository di sprite. Pokémon e i relativi nomi appartengono ai rispettivi titolari.
+CapsuleDex è un progetto fan-made non ufficiale. Gli indici derivano dai dati pubblici di PokéAPI; dettagli e immagini vengono caricati tramite PokéAPI e il relativo repository di sprite. Pokémon e i relativi nomi appartengono ai rispettivi titolari.

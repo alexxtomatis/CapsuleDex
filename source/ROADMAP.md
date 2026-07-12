@@ -25,57 +25,43 @@
   - Squadre da un massimo di 6 Pokémon
   - Ricerca, aggiunta e rimozione
   - Più squadre salvabili
-  - Selezione della squadra attiva
-  - Rinomina ed eliminazione
-  - Salvataggio locale automatico
-  - Collegamento dalle schede Pokémon
+  - Rinomina, eliminazione e salvataggio locale
 
 - [x] **Fase 5 — Preferiti**
   - Aggiunta e rimozione dal Pokédex e dalle schede
   - Schermata personale dedicata
-  - Ricerca per nome e numero
-  - Ordinamento per recenti, numero e nome
-  - Conteggio e svuotamento della lista
-  - Salvataggio locale automatico
+  - Ricerca, ordinamento e salvataggio locale
 
 - [x] **Fase 6 — Collezione personale**
   - Registrazione dei Pokémon catturati
   - Categorie Shiny, Alpha, Gigamax, Paradox e Leggendario
-  - Aggiunta da ricerca, Pokédex e scheda Pokémon
-  - Riepilogo e avanzamento sul Pokédex nazionale
-  - Ricerca, filtri e ordinamento
-  - Rimozione singola e svuotamento completo
-  - Salvataggio locale automatico
+  - Riepilogo, ricerca, filtri e ordinamento
 
 - [x] **Fase 7 — Calcolatore tipi**
-  - Analisi di un Pokémon per nome o numero
-  - Selezione manuale di uno o due tipi
-  - Debolezze ×4 e ×2
-  - Resistenze ×0,5 e ×0,25
-  - Immunità ×0
+  - Debolezze, resistenze e immunità
+  - Analisi Pokémon e selezione manuale dei tipi
   - Matrice completa dei 18 tipi
-  - Collegamento dalle schede Pokémon
-  - Ultime analisi salvate localmente
 
 - [x] **Fase 8 — Battle Dex**
-  - Ricerca e selezione di due Pokémon
-  - Confronto delle sei statistiche base
-  - Velocità e totale BST
-  - Efficacia offensiva dei tipi
-  - Abilità normali e nascoste
-  - Anteprima delle mosse apprendibili
-  - Punteggio comparativo ed evidenziazione dei vantaggi
+  - Confronto di statistiche, BST, tipi, abilità e mosse
   - Collegamento diretto dalle schede Pokémon
+
 - [x] **Fase 9 — Database mosse**
-  - Archivio locale con nomi italiani e inglesi
-  - Ricerca per nome, identificatore e numero
-  - Filtri per tipo, categoria e generazione
-  - Ordinamento per numero, nome, potenza, precisione e PP
-  - Schede con potenza, precisione, PP, tipo e categoria
-  - Effetti avanzati, priorità, stato e modifiche statistiche
-  - Elenco dei Pokémon compatibili
+  - Archivio con nomi italiani e inglesi
+  - Ricerca, filtri e ordinamento
+  - Effetti avanzati e Pokémon compatibili
   - Collegamento diretto dalle schede Pokémon
-- [ ] **Fase 10 — Database strumenti**
+
+- [x] **Fase 10 — Database strumenti**
+  - Archivio locale di oltre 2.200 strumenti
+  - Nomi italiani e inglesi
+  - Ricerca per nome, identificatore e numero
+  - Filtri per famiglia, tasca e categoria
+  - Ordinamento per numero, nome, prezzo e potenza Lancio
+  - Schede con descrizione, effetto, proprietà e generazione
+  - Pokémon che possono tenere lo strumento
+  - Collegamento delle MT al Database mosse
+
 - [ ] **Fase 11 — Database abilità**
 - [ ] **Fase 12 — Evoluzioni avanzate**
 - [ ] **Fase 13 — Modalità offline**

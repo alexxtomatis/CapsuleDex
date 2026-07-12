@@ -4,6 +4,7 @@ import { BottomNav } from './components/BottomNav'
 import { BattleView } from './components/BattleView'
 import { CollectionView } from './components/CollectionView'
 import { FavoritesView } from './components/FavoritesView'
+import { ItemView } from './components/ItemView'
 import { FeatureCard } from './components/FeatureCard'
 import { SearchIcon } from './components/Icon'
 import { PokedexView } from './components/PokedexView'
@@ -22,11 +23,10 @@ import type { CollectionEntry, CollectionTrait, FavoriteEntry, Feature, PokemonT
 const phaseLabels: Record<number, string> = {
   6: 'Collezione personale',
   9: 'Database mosse',
-  10: 'Database strumenti',
   11: 'Database abilità',
 }
 
-type Screen = 'home' | 'pokedex' | 'detail' | 'team' | 'favorites' | 'collection' | 'types' | 'battle' | 'moves'
+type Screen = 'home' | 'pokedex' | 'detail' | 'team' | 'favorites' | 'collection' | 'types' | 'battle' | 'moves' | 'items'
 type DetailReturnScreen = Exclude<Screen, 'detail'>
 
 function App() {
@@ -40,6 +40,7 @@ function App() {
   const [typeCalculatorPokemonId, setTypeCalculatorPokemonId] = useState<number | null>(null)
   const [battlePokemonId, setBattlePokemonId] = useState<number | null>(null)
   const [selectedMoveId, setSelectedMoveId] = useState<number | null>(null)
+  const [selectedItemId, setSelectedItemId] = useState<number | null>(null)
   const [activeNav, setActiveNav] = useState('home')
   const [toast, setToast] = useState('')
   const toastTimer = useRef<number | null>(null)
@@ -106,6 +107,13 @@ function App() {
     goToTop()
   }
 
+  function openItems(itemId: number | null = null) {
+    setSelectedItemId(itemId)
+    setActiveNav('home')
+    setScreen('items')
+    goToTop()
+  }
+
   function openMoves(moveKey: number | string | null = null) {
     const moveId = typeof moveKey === 'string' ? moveBySlug.get(moveKey)?.id ?? null : moveKey
     setSelectedMoveId(moveId)
@@ -161,6 +169,10 @@ function App() {
     }
     if (feature.id === 'moves') {
       openMoves()
+      return
+    }
+    if (feature.id === 'items') {
+      openItems()
       return
     }
     const label = phaseLabels[feature.phase] ?? feature.title
@@ -390,7 +402,7 @@ function App() {
                     </p>
                     <h2 id="explore-title">Esplora CapsuleDex</h2>
                   </div>
-                  <span className="progress-chip">9 / 14</span>
+                  <span className="progress-chip">10 / 14</span>
                 </div>
 
                 <div className="feature-grid">
@@ -405,15 +417,15 @@ function App() {
                   <h2 id="highlight-title">In evidenza</h2>
                   <button type="button" onClick={() => showToast('La roadmap è inclusa nel file ROADMAP.md.')}>Roadmap</button>
                 </div>
-                <article className="highlight-card highlight-card--moves">
-                  <div className="highlight-badge">FASE 9</div>
+                <article className="highlight-card highlight-card--items">
+                  <div className="highlight-badge">FASE 10</div>
                   <div>
                     <p>Nuova funzione disponibile</p>
-                    <h3>Database mosse</h3>
-                    <span>Consulta tutte le mosse con nome italiano, potenza, precisione, PP, tipo, categoria, effetto e compatibilità.</span>
+                    <h3>Database strumenti</h3>
+                    <span>Esplora Poké Ball, bacche, rimedi, MT, pietre evolutive e strumenti da tenere con schede complete.</span>
                   </div>
-                  <div className="completion-ring completion-ring--phase-nine" aria-label="Fase 9 completata">
-                    <strong>9/14</strong>
+                  <div className="completion-ring completion-ring--phase-ten" aria-label="Fase 10 completata">
+                    <strong>10/14</strong>
                   </div>
                 </article>
               </section>
@@ -500,6 +512,21 @@ function App() {
               }}
               onOpenPokemon={(id) => openPokemon(id, 'moves')}
               onSelectionChange={setSelectedMoveId}
+              onToast={showToast}
+            />
+          )}
+
+          {screen === 'items' && (
+            <ItemView
+              initialItemId={selectedItemId}
+              onBack={() => {
+                setScreen('home')
+                setActiveNav('home')
+                goToTop()
+              }}
+              onOpenPokemon={(id) => openPokemon(id, 'items')}
+              onOpenMove={(moveSlug) => openMoves(moveSlug)}
+              onSelectionChange={setSelectedItemId}
               onToast={showToast}
             />
           )}
