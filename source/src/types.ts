@@ -78,3 +78,10 @@ export type TypeFilter = {
   label: string
   symbol: string
 }
+
+export type PokemonTeam = {
+  id: string
+  name: string
+  pokemonIds: number[]
+  createdAt: number
+}

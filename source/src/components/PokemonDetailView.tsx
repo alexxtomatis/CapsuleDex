@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { italianTypeNames } from '../data/features'
 import { getPokemonDetail } from '../services/pokeapi'
 import type { PokemonDetailData, PokemonStat } from '../types'
-import { ArrowLeftIcon, ChartIcon, EvolutionIcon, IconButton, InfoIcon, StarIcon } from './Icon'
+import { ArrowLeftIcon, ChartIcon, EvolutionIcon, IconButton, InfoIcon, StarIcon, UsersIcon } from './Icon'
 
 const padId = (id: number) => `N°${String(id).padStart(4, '0')}`
 
@@ -49,9 +49,13 @@ type DetailProps = {
   onBack: () => void
   onOpenPokemon: (id: number) => void
   onToast: (message: string) => void
+  isInTeam: boolean
+  isTeamFull: boolean
+  onAddToTeam: () => void
+  onOpenTeam: () => void
 }
 
-export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast }: DetailProps) {
+export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, isInTeam, isTeamFull, onAddToTeam, onOpenTeam }: DetailProps) {
   const [pokemon, setPokemon] = useState<PokemonDetailData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -138,8 +142,8 @@ export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast }:
       <header className="detail-topbar">
         <IconButton label="Torna al Pokédex" onClick={onBack}><ArrowLeftIcon /></IconButton>
         <span className="detail-topbar__title">Scheda Pokémon</span>
-        <IconButton label="Aggiungi ai preferiti" onClick={() => onToast('I preferiti saranno salvabili nella Fase 5.')}>
-          <StarIcon />
+        <IconButton label={isInTeam ? 'Apri la squadra' : 'Aggiungi alla squadra'} onClick={isInTeam ? onOpenTeam : onAddToTeam}>
+          <UsersIcon />
         </IconButton>
       </header>
 
@@ -183,6 +187,22 @@ export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast }:
       <section className="detail-description">
         <p>{pokemon.description}</p>
       </section>
+
+      <div className="detail-team-action">
+        <button
+          type="button"
+          className={isInTeam ? 'is-added' : ''}
+          disabled={!isInTeam && isTeamFull}
+          onClick={isInTeam ? onOpenTeam : onAddToTeam}
+        >
+          <UsersIcon />
+          <span>
+            <strong>{isInTeam ? 'Nella squadra attiva' : isTeamFull ? 'Squadra completa' : 'Aggiungi alla squadra'}</strong>
+            <small>{isInTeam ? 'Apri il Team Builder' : isTeamFull ? 'Rimuovi prima un Pokémon' : 'Salvataggio automatico'}</small>
+          </span>
+          <b>{isInTeam ? '→' : '+'}</b>
+        </button>
+      </div>
 
       <section className="detail-facts" aria-label="Informazioni principali">
         <article>

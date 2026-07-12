@@ -1,56 +1,53 @@
-# CapsuleDex — Fase 3
+# CapsuleDex — Fase 4
 
-Questa cartella contiene la versione **già compilata** di CapsuleDex, pronta per essere caricata su GitHub Pages.
+Questa cartella contiene la versione **già compilata** di CapsuleDex, pronta per GitHub Pages. Il codice React + TypeScript modificabile è incluso nella cartella `source/`.
 
-## Novità della Fase 3
+## Novità della Fase 4 — Team Builder
 
-- Scheda completa apribile da ogni carta del Pokédex
-- Nome, numero, tipi e artwork ufficiale
-- Versione normale e shiny
-- Descrizione in italiano quando disponibile
-- Altezza, peso, categoria, generazione e habitat
-- Abilità con descrizione e indicazione delle abilità nascoste
-- Sei statistiche base, totale, barre e grafico radar
-- Catena evolutiva con requisiti di evoluzione
-- Gestione delle catene con più rami
-- Varianti e forme alternative
-- Navigazione tra Pokémon precedente e successivo
-- Navigazione interna rapida tra panoramica, statistiche, evoluzioni e varianti
-- Gestione di caricamento, errori e tentativo di ricarica
+- Schermata **La mia squadra** ispirata al mockup di CapsuleDex
+- Squadra attiva composta da un massimo di 6 Pokémon
+- Ricerca per nome inglese o numero Pokédex
+- Aggiunta e rimozione dei Pokémon
+- Apertura della scheda completa direttamente dal team
+- Creazione di più squadre
+- Selezione rapida della squadra attiva
+- Rinomina delle squadre
+- Eliminazione delle squadre
+- Conteggio di Pokémon, tipi diversi e slot liberi
+- Pulsante **Aggiungi alla squadra** nelle schede Pokémon
+- Salvataggio automatico tramite `localStorage`
+- Squadra dimostrativa iniziale al primo avvio
+- Nuova voce **Squadra** nella navigazione inferiore
 
-Le funzioni della Fase 2 restano disponibili: elenco, ricerca, filtri per regione e tipo e caricamento progressivo.
+Tutte le funzioni delle Fasi 1–3 restano disponibili: home, Pokédex, ricerca, filtri, schede dettagliate, shiny, statistiche, abilità, evoluzioni e varianti.
 
-## Aggiornamento del repository GitHub
+## Aggiornamento su GitHub
 
 1. Scarica ed estrai lo ZIP.
-2. Apri la cartella `CapsuleDex-Fase-3`.
+2. Apri la cartella `CapsuleDex-Fase-4`.
 3. Carica **tutto il contenuto interno** nella radice del repository `CapsuleDex`.
-4. Sostituisci i file esistenti, soprattutto `index.html` e la cartella `assets`.
+4. Su GitHub scegli di sostituire i file esistenti, soprattutto `index.html` e la cartella `assets`.
 5. Premi **Commit changes**.
-6. Non cambiare le impostazioni GitHub Pages:
+6. Lascia GitHub Pages impostato su:
    - Source: `Deploy from a branch`
    - Branch: `main`
    - Folder: `/(root)`
-7. Attendi alcuni minuti e ricarica il sito.
-
-Indirizzo del progetto:
+7. Attendi alcuni minuti e apri:
 
 `https://alexxtomatis.github.io/CapsuleDex/`
 
-Su Safari, in caso di versione precedente ancora visibile, chiudi la scheda e riaprila oppure svuota i dati del sito.
+Se Safari mostra ancora la versione precedente, chiudi la scheda e riaprila oppure elimina i dati del sito.
 
 ## File principali
 
-- `index.html`: applicazione compilata che GitHub Pages deve aprire
+- `index.html`: applicazione compilata
 - `assets/`: JavaScript, CSS, icone e marchio
-- `.nojekyll`: impedisce elaborazioni indesiderate di GitHub Pages
-- `source/`: codice React + TypeScript modificabile
-- `ROADMAP.md`: stato delle fasi
-- `CHANGELOG.md`: modifiche introdotte
+- `.nojekyll`: evita elaborazioni indesiderate di GitHub Pages
+- `source/`: progetto React + TypeScript
+- `ROADMAP.md`: avanzamento delle fasi
+- `CHANGELOG.md`: modifiche della versione
 
 ## Sviluppo locale
-
-Il codice sorgente si trova in `source/`.
 
 ```bash
 cd source
@@ -65,7 +62,9 @@ npm run lint
 npm run build
 ```
 
-La build viene creata in `source/dist/`.
+## Salvataggio delle squadre
+
+Le squadre vengono salvate nel browser del dispositivo tramite `localStorage`. Non vengono ancora sincronizzate tra dispositivi o account diversi. La cancellazione dei dati del sito elimina anche le squadre salvate.
 
 ## Dati e note legali
 

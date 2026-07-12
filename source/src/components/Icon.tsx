@@ -137,3 +137,38 @@ export function EvolutionIcon() {
     </svg>
   )
 }
+
+export function PlusIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  )
+}
+
+export function UsersIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="9" cy="8" r="3" />
+      <path d="M3.5 19c.4-3.5 2.2-5.2 5.5-5.2s5.1 1.7 5.5 5.2" />
+      <path d="M15 6.2a3 3 0 0 1 0 5.6M16.2 14c2.6.3 4 2 4.3 5" />
+    </svg>
+  )
+}
+
+export function EditIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="m4 20 4.2-1 10.6-10.6a2.1 2.1 0 0 0-3-3L5.2 16 4 20Z" />
+      <path d="m14.5 6.7 2.8 2.8" />
+    </svg>
+  )
+}
+
+export function TrashIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5" />
+    </svg>
+  )
+}

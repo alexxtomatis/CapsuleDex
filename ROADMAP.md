@@ -18,14 +18,17 @@
   - Artwork normale e shiny
   - Statistiche base e grafico radar
   - Abilità e descrizioni
-  - Descrizione italiana
   - Catena evolutiva e requisiti
   - Varianti e forme alternative
 
-- [ ] **Fase 4 — Team Builder**
-  - Creazione di squadre da 6 Pokémon
+- [x] **Fase 4 — Team Builder**
+  - Squadre da un massimo di 6 Pokémon
+  - Ricerca, aggiunta e rimozione
   - Più squadre salvabili
-  - Rinomina e gestione
+  - Selezione della squadra attiva
+  - Rinomina ed eliminazione
+  - Salvataggio locale automatico
+  - Collegamento dalle schede Pokémon
 
 - [ ] **Fase 5 — Preferiti**
 - [ ] **Fase 6 — Collezione personale**

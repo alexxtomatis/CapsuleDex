@@ -1,7 +1,7 @@
 {
   "name": "CapsuleDex",
   "short_name": "CapsuleDex",
-  "description": "Il tuo compagno digitale per esplorare il mondo Pokémon.",
+  "description": "Pokédex e Team Builder per creare e salvare le tue squadre Pokémon.",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",

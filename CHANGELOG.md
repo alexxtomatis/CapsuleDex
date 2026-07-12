@@ -1,24 +1,27 @@
 # Changelog
 
-## 0.3.0 — Fase 3
+## 0.4.0 — Fase 4
 
 ### Aggiunto
 
-- Nuova schermata dettagliata per ogni Pokémon
-- Descrizioni localizzate in italiano quando presenti in PokéAPI
-- Informazioni fisiche e classificazione
-- Abilità normali e nascoste con descrizioni
-- Statistiche base, totale, barre e grafico radar
-- Artwork shiny selezionabile
-- Catene evolutive con ramificazioni e requisiti
-- Varianti e forme alternative selezionabili
-- Navigazione tra Pokémon precedente e successivo
-- Barra di navigazione specifica della scheda
-- Cache dei dati dettagliati e delle abilità
-- Stati di caricamento, errore e riprova
+- Team Builder completo
+- Squadra attiva fino a 6 Pokémon
+- Ricerca e aggiunta per nome o numero
+- Rimozione dei membri del team
+- Creazione e gestione di più squadre
+- Selezione rapida della squadra attiva
+- Rinomina ed eliminazione delle squadre
+- Conteggio dei tipi e degli slot disponibili
+- Salvataggio automatico delle squadre nel browser
+- Squadra dimostrativa iniziale
+- Accesso alla scheda Pokémon dal Team Builder
+- Aggiunta alla squadra dalla scheda dettagliata
+- Voce Squadra nella barra di navigazione
+- Finestre di conferma e modifica ottimizzate per mobile
 
 ### Modificato
 
-- Home aggiornata alla Fase 3
-- Carta Pokémon aggiornata per indicare le schede complete
-- Versione del progetto aggiornata a `0.3.0`
+- Home aggiornata alla Fase 4
+- Carta “La mia squadra” resa operativa
+- Navigazione principale aggiornata
+- Versione del progetto aggiornata a `0.4.0`
