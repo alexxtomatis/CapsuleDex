@@ -1,9 +1,33 @@
+export type Accent = 'orange' | 'green' | 'purple' | 'blue' | 'cyan' | 'pink'
+
 export type Feature = {
   id: string
   title: string
   subtitle: string
   icon: string
-  accent: 'orange' | 'green' | 'purple' | 'blue' | 'cyan' | 'pink'
+  accent: Accent
   phase: number
-  wide?: boolean
+}
+
+export type PokemonCatalogItem = {
+  id: number
+  name: string
+}
+
+export type PokemonCardData = PokemonCatalogItem & {
+  image: string | null
+  types: string[]
+}
+
+export type RegionFilter = {
+  id: string
+  label: string
+  min: number
+  max: number
+}
+
+export type TypeFilter = {
+  id: string
+  label: string
+  symbol: string
 }

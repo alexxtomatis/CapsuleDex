@@ -38,6 +38,22 @@ export function BellIcon() {
   )
 }
 
+export function ArrowLeftIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="m15 19-7-7 7-7" />
+    </svg>
+  )
+}
+
+export function FilterIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 6h16M7 12h10M10 18h4" />
+    </svg>
+  )
+}
+
 export function GridIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
