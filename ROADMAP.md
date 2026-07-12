@@ -54,15 +54,19 @@
 
 - [x] **Fase 10 — Database strumenti**
   - Archivio locale di oltre 2.200 strumenti
-  - Nomi italiani e inglesi
-  - Ricerca per nome, identificatore e numero
-  - Filtri per famiglia, tasca e categoria
-  - Ordinamento per numero, nome, prezzo e potenza Lancio
-  - Schede con descrizione, effetto, proprietà e generazione
-  - Pokémon che possono tenere lo strumento
+  - Ricerca, filtri e ordinamento
+  - Schede con effetti, proprietà e Pokémon possessori
   - Collegamento delle MT al Database mosse
 
-- [ ] **Fase 11 — Database abilità**
+- [x] **Fase 11 — Database abilità**
+  - Archivio locale con nomi italiani e inglesi
+  - Ricerca per nome, identificatore e numero
+  - Filtri per generazione e provenienza
+  - Schede con descrizione ed effetto tecnico
+  - Modifiche storiche dell'effetto
+  - Pokémon associati, abilità normali e nascoste
+  - Collegamenti bidirezionali con le schede Pokémon
+
 - [ ] **Fase 12 — Evoluzioni avanzate**
 - [ ] **Fase 13 — Modalità offline**
 - [ ] **Fase 14 — Rifinitura e pubblicazione**

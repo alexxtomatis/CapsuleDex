@@ -61,10 +61,11 @@ type DetailProps = {
   onOpenTypeCalculator: () => void
   onOpenBattle: () => void
   onOpenMove: (moveSlug: string) => void
+  onOpenAbility: (abilitySlug: string) => void
   onToggleCollectionTrait: (trait: CollectionTrait, name?: string) => void
 }
 
-export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, isInTeam, isTeamFull, onAddToTeam, onOpenTeam, isFavorite, onToggleFavorite, collectionEntry, onAddToCollection, onOpenCollection, onOpenTypeCalculator, onOpenBattle, onOpenMove, onToggleCollectionTrait }: DetailProps) {
+export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, isInTeam, isTeamFull, onAddToTeam, onOpenTeam, isFavorite, onToggleFavorite, collectionEntry, onAddToCollection, onOpenCollection, onOpenTypeCalculator, onOpenBattle, onOpenMove, onOpenAbility, onToggleCollectionTrait }: DetailProps) {
   const [pokemon, setPokemon] = useState<PokemonDetailData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -342,12 +343,15 @@ export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, i
         </div>
         <div className="ability-list">
           {pokemon.abilities.map((ability) => (
-            <article key={`${ability.id}-${ability.hidden}`} className="ability-card">
-              <div>
-                <strong>{ability.name}</strong>
-                {ability.hidden && <span>Abilità nascosta</span>}
-              </div>
-              <p>{ability.description}</p>
+            <article key={`${ability.id}-${ability.hidden}`} className="ability-card ability-card--linked">
+              <button type="button" onClick={() => onOpenAbility(ability.id)} aria-label={`Apri la scheda di ${ability.name}`}>
+                <div>
+                  <strong>{ability.name}</strong>
+                  {ability.hidden && <span>Abilità nascosta</span>}
+                </div>
+                <p>{ability.description}</p>
+                <small>Apri nel Database abilità <b>→</b></small>
+              </button>
             </article>
           ))}
         </div>

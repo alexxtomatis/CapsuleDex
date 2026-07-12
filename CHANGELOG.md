@@ -1,35 +1,41 @@
 # Changelog
 
-## 0.10.0 — Fase 10
+## 0.11.0 — Fase 11
 
 ### Aggiunto
 
-- Database strumenti con 2.221 voci indicizzate localmente
+- Database abilità con 373 voci indicizzate localmente
 - Nomi italiani e inglesi ricercabili
 - Ricerca per nome, identificatore API e numero
-- Filtri rapidi per bacche, Poké Ball, rimedi, MT/MN, evoluzione, strumenti da tenere, lotta e strumenti base
-- Filtri avanzati per tasca e categoria
-- Ordinamento per numero, nome, prezzo e potenza della mossa Lancio
-- Carte con immagine, categoria, prezzo e potenza Lancio
-- Scheda dettagliata con descrizione, effetto, tasca, categoria e proprietà
-- Informazioni sulla mossa Lancio e sui relativi effetti
-- Generazione ricavata dagli indici di gioco disponibili
-- Elenco dei Pokémon che possono tenere ogni strumento in natura
-- Elenco delle mosse associate alle MT/MN
-- Collegamento dalle MT al Database mosse
-- Collegamento dai Pokémon possessori alle schede Pokémon
+- Filtri per generazione, serie principale e titoli secondari
+- Ordinamento per numero, nome e generazione
+- Carte riepilogative con generazione e provenienza
+- Scheda dettagliata con descrizione ed effetto tecnico
+- Indicazione della lingua dell'effetto disponibile
+- Elenco delle modifiche storiche dell'effetto
+- Elenco dei Pokémon associati a ogni abilità
+- Distinzione tra abilità normale e nascosta
+- Ricerca e filtri nell'elenco dei Pokémon compatibili
+- Collegamento dal Database abilità alle schede Pokémon
+- Collegamento dalle schede Pokémon alle schede delle abilità
+- Navigazione tra abilità precedente e successiva
 - Copia rapida del riepilogo
 - Indice locale generato dai dati ufficiali PokéAPI
-- Cache in memoria dei dettagli degli strumenti
+- Cache in memoria dei dettagli delle abilità
 
 ### Modificato
 
-- Home aggiornata alla Fase 10
-- Carta Strumenti resa operativa
-- Indicatore di avanzamento aggiornato a `10 / 14`
-- Servizio PokéAPI esteso con i dettagli completi degli strumenti
+- Home aggiornata alla Fase 11
+- Carta Abilità resa operativa
+- Indicatore di avanzamento aggiornato a `11 / 14`
+- Schede Pokémon rese navigabili verso il Database abilità
+- Servizio PokéAPI esteso con effetti, modifiche storiche e Pokémon associati
 - Descrizione della web app aggiornata
-- Versione del progetto aggiornata a `0.10.0`
+- Versione del progetto aggiornata a `0.11.0`
+
+## 0.10.0 — Fase 10
+
+- Database strumenti con oltre 2.200 voci, filtri, schede complete e collegamenti a mosse e Pokémon
 
 ## 0.9.0 — Fase 9
 

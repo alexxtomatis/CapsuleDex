@@ -1,7 +1,7 @@
 {
   "name": "CapsuleDex",
   "short_name": "CapsuleDex",
-  "description": "Pokédex, squadre, collezione, Battle Dex e database completi di mosse e strumenti Pokémon.",
+  "description": "Pokédex, squadre, collezione, Battle Dex e database completi di mosse, strumenti e abilità Pokémon.",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",

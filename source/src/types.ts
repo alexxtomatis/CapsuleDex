@@ -194,3 +194,33 @@ export type ItemDetailData = ItemIndexItem & {
   machines: ItemMachinePreview[]
   babyTrigger: boolean
 }
+
+export type AbilityIndexItem = {
+  id: number
+  slug: string
+  name: string
+  englishName: string
+  generation: number
+  isMainSeries: boolean
+}
+
+export type AbilityPokemonPreview = {
+  id: number
+  name: string
+  image: string
+  hidden: boolean
+  slot: number
+}
+
+export type AbilityEffectChange = {
+  versionGroup: string
+  effect: string
+}
+
+export type AbilityDetailData = AbilityIndexItem & {
+  description: string
+  effect: string
+  effectLanguage: 'it' | 'en'
+  pokemon: AbilityPokemonPreview[]
+  effectChanges: AbilityEffectChange[]
+}

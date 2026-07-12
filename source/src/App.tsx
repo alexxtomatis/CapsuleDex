@@ -1,4 +1,5 @@
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { AbilityView } from './components/AbilityView'
 import { AppHeader } from './components/AppHeader'
 import { BottomNav } from './components/BottomNav'
 import { BattleView } from './components/BattleView'
@@ -14,6 +15,7 @@ import { TeamView } from './components/TeamView'
 import { TypeCalculatorView } from './components/TypeCalculatorView'
 import { Toast } from './components/Toast'
 import { features, regions } from './data/features'
+import { abilityBySlug } from './data/abilityIndex'
 import { moveBySlug } from './data/moveIndex'
 import { loadCollection, saveCollection } from './services/collectionStorage'
 import { loadFavorites, saveFavorites } from './services/favoriteStorage'
@@ -23,10 +25,9 @@ import type { CollectionEntry, CollectionTrait, FavoriteEntry, Feature, PokemonT
 const phaseLabels: Record<number, string> = {
   6: 'Collezione personale',
   9: 'Database mosse',
-  11: 'Database abilità',
 }
 
-type Screen = 'home' | 'pokedex' | 'detail' | 'team' | 'favorites' | 'collection' | 'types' | 'battle' | 'moves' | 'items'
+type Screen = 'home' | 'pokedex' | 'detail' | 'team' | 'favorites' | 'collection' | 'types' | 'battle' | 'moves' | 'items' | 'abilities'
 type DetailReturnScreen = Exclude<Screen, 'detail'>
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
   const [battlePokemonId, setBattlePokemonId] = useState<number | null>(null)
   const [selectedMoveId, setSelectedMoveId] = useState<number | null>(null)
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null)
+  const [selectedAbilityId, setSelectedAbilityId] = useState<number | null>(null)
   const [activeNav, setActiveNav] = useState('home')
   const [toast, setToast] = useState('')
   const toastTimer = useRef<number | null>(null)
@@ -129,6 +131,14 @@ function App() {
     goToTop()
   }
 
+  function openAbilities(abilityKey: number | string | null = null) {
+    const abilityId = typeof abilityKey === 'string' ? abilityBySlug.get(abilityKey)?.id ?? null : abilityKey
+    setSelectedAbilityId(abilityId)
+    setActiveNav('home')
+    setScreen('abilities')
+    goToTop()
+  }
+
   function openPokemon(id: number, returnScreen?: DetailReturnScreen) {
     setSelectedPokemonId(id)
     if (returnScreen) setDetailReturnScreen(returnScreen)
@@ -173,6 +183,10 @@ function App() {
     }
     if (feature.id === 'items') {
       openItems()
+      return
+    }
+    if (feature.id === 'abilities') {
+      openAbilities()
       return
     }
     const label = phaseLabels[feature.phase] ?? feature.title
@@ -402,7 +416,7 @@ function App() {
                     </p>
                     <h2 id="explore-title">Esplora CapsuleDex</h2>
                   </div>
-                  <span className="progress-chip">10 / 14</span>
+                  <span className="progress-chip">11 / 14</span>
                 </div>
 
                 <div className="feature-grid">
@@ -417,15 +431,15 @@ function App() {
                   <h2 id="highlight-title">In evidenza</h2>
                   <button type="button" onClick={() => showToast('La roadmap è inclusa nel file ROADMAP.md.')}>Roadmap</button>
                 </div>
-                <article className="highlight-card highlight-card--items">
-                  <div className="highlight-badge">FASE 10</div>
+                <article className="highlight-card highlight-card--abilities">
+                  <div className="highlight-badge">FASE 11</div>
                   <div>
                     <p>Nuova funzione disponibile</p>
-                    <h3>Database strumenti</h3>
-                    <span>Esplora Poké Ball, bacche, rimedi, MT, pietre evolutive e strumenti da tenere con schede complete.</span>
+                    <h3>Database abilità</h3>
+                    <span>Consulta effetti, generazioni, variazioni storiche e tutti i Pokémon associati a ogni abilità.</span>
                   </div>
-                  <div className="completion-ring completion-ring--phase-ten" aria-label="Fase 10 completata">
-                    <strong>10/14</strong>
+                  <div className="completion-ring completion-ring--phase-eleven" aria-label="Fase 11 completata">
+                    <strong>11/14</strong>
                   </div>
                 </article>
               </section>
@@ -531,6 +545,20 @@ function App() {
             />
           )}
 
+          {screen === 'abilities' && (
+            <AbilityView
+              initialAbilityId={selectedAbilityId}
+              onBack={() => {
+                setScreen('home')
+                setActiveNav('home')
+                goToTop()
+              }}
+              onOpenPokemon={(id) => openPokemon(id, 'abilities')}
+              onSelectionChange={setSelectedAbilityId}
+              onToast={showToast}
+            />
+          )}
+
           {screen === 'battle' && (
             <BattleView
               initialPokemonId={battlePokemonId}
@@ -586,6 +614,7 @@ function App() {
               onOpenTypeCalculator={() => openTypeCalculator(selectedPokemonId)}
               onOpenBattle={() => openBattle(selectedPokemonId)}
               onOpenMove={(moveSlug) => openMoves(moveSlug)}
+              onOpenAbility={(abilitySlug) => openAbilities(abilitySlug)}
               onToggleCollectionTrait={(trait, name) => toggleCollectionTrait(selectedPokemonId, trait, name)}
             />
           )}

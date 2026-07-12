@@ -1,7 +1,11 @@
 import { statLabels } from '../data/features'
+import { abilityById } from '../data/abilityIndex'
 import { itemById } from '../data/itemIndex'
 import { moveById, moveBySlug } from '../data/moveIndex'
 import type {
+  AbilityDetailData,
+  AbilityEffectChange,
+  AbilityPokemonPreview,
   EvolutionPath,
   ItemDetailData,
   ItemHeldPokemonPreview,
@@ -22,6 +26,7 @@ const OFFICIAL_ARTWORK_BASE = 'https://raw.githubusercontent.com/PokeAPI/sprites
 const detailCache = new Map<number, PokemonCardData>()
 const fullDetailCache = new Map<number, PokemonDetailData>()
 const abilityCache = new Map<string, PokemonAbility>()
+const abilityDetailCache = new Map<number, AbilityDetailData>()
 const typeCache = new Map<string, Set<number>>()
 let catalogCache: PokemonCatalogItem[] | null = null
 
@@ -116,12 +121,23 @@ type TypeResponse = {
 type AbilityResponse = {
   id: number
   name: string
+  is_main_series: boolean
+  generation: { name: string; url: string }
   names: Array<{ name: string; language: { name: string } }>
   flavor_text_entries: Array<{ flavor_text: string; language: { name: string }; version_group: { name: string } }>
   effect_entries: Array<{
     short_effect: string
     effect: string
     language: { name: string }
+  }>
+  effect_changes: Array<{
+    effect_entries: Array<{ effect: string; language: { name: string } }>
+    version_group: { name: string; url: string }
+  }>
+  pokemon: Array<{
+    is_hidden: boolean
+    slot: number
+    pokemon: { name: string; url: string }
   }>
 }
 
@@ -811,5 +827,71 @@ export async function getItemDetail(id: number, signal?: AbortSignal): Promise<I
   }
 
   itemDetailCache.set(id, detail)
+  return detail
+}
+
+
+export async function getAbilityDetail(id: number, signal?: AbortSignal): Promise<AbilityDetailData> {
+  const cached = abilityDetailCache.get(id)
+  if (cached) return cached
+
+  const payload = await fetchJson<AbilityResponse>(`${API_BASE}/ability/${id}`, signal)
+  const indexEntry = abilityById.get(payload.id)
+  const italianFlavor = [...payload.flavor_text_entries]
+    .reverse()
+    .find((entry) => entry.language.name === 'it')?.flavor_text
+  const englishFlavor = [...payload.flavor_text_entries]
+    .reverse()
+    .find((entry) => entry.language.name === 'en')?.flavor_text
+  const italianEffect = payload.effect_entries.find((entry) => entry.language.name === 'it')
+  const englishEffect = payload.effect_entries.find((entry) => entry.language.name === 'en')
+  const effectSource = italianEffect ?? englishEffect
+  const effectLanguage: 'it' | 'en' = italianEffect ? 'it' : 'en'
+
+  const pokemon: AbilityPokemonPreview[] = payload.pokemon
+    .map((entry) => {
+      const pokemonId = extractId(entry.pokemon.url)
+      return {
+        id: pokemonId,
+        name: titleCasePokemonName(entry.pokemon.name),
+        image: officialArtwork(pokemonId),
+        hidden: entry.is_hidden,
+        slot: entry.slot,
+      }
+    })
+    .filter((entry) => Number.isFinite(entry.id) && entry.id > 0)
+    .sort((a, b) => a.id - b.id || Number(a.hidden) - Number(b.hidden))
+
+  const effectChanges: AbilityEffectChange[] = payload.effect_changes
+    .map((change) => {
+      const italianChange = change.effect_entries.find((entry) => entry.language.name === 'it')?.effect
+      const englishChange = change.effect_entries.find((entry) => entry.language.name === 'en')?.effect
+      const effect = italianChange ?? englishChange
+      if (!effect) return null
+      return {
+        versionGroup: formatVersionName(change.version_group.name),
+        effect: cleanApiEffect(effect),
+      }
+    })
+    .filter((entry): entry is AbilityEffectChange => Boolean(entry))
+
+  const generationId = extractId(payload.generation.url)
+  const detail: AbilityDetailData = {
+    id: payload.id,
+    slug: payload.name,
+    name: localizedName(payload.names, payload.name),
+    englishName: indexEntry?.englishName ?? titleCasePokemonName(payload.name),
+    generation: Number.isFinite(generationId) && generationId > 0 ? generationId : indexEntry?.generation ?? 0,
+    isMainSeries: payload.is_main_series,
+    description: cleanText(italianFlavor ?? englishFlavor ?? 'Descrizione non disponibile.'),
+    effect: cleanApiEffect(
+      effectSource?.short_effect ?? effectSource?.effect ?? italianFlavor ?? englishFlavor ?? 'Effetto non disponibile.',
+    ),
+    effectLanguage,
+    pokemon,
+    effectChanges,
+  }
+
+  abilityDetailCache.set(id, detail)
   return detail
 }
