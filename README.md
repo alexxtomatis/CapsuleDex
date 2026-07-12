@@ -1,61 +1,49 @@
-# CapsuleDex 1.0 — Fase 14
+# CapsuleDex 1.1 — Fase 15
 
-Questa cartella contiene la **release finale già compilata** di CapsuleDex, pronta per GitHub Pages. Il progetto React + TypeScript modificabile è incluso in `source/`.
+Questa cartella contiene la **release compilata e pronta per GitHub Pages** di CapsuleDex. Il progetto React + TypeScript modificabile è incluso in `source/`.
 
-## Novità della Fase 14 — Rifinitura e pubblicazione
+## Novità dell’aggiornamento 1.1
 
-- Release stabile **1.0.0** e roadmap completata `14 / 14`
-- Nuovo pannello **Impostazioni** accessibile dall’icona a ingranaggio
-- Tema:
-  - automatico in base al sistema
-  - scuro
-  - chiaro
-- Opzione per ridurre animazioni e transizioni
-- Layout compatto per mostrare più contenuti
-- Preferenze salvate localmente sul dispositivo
-- Caricamento differito delle sezioni principali per ridurre il JavaScript iniziale
-- Archivio di strumenti, mosse e abilità separato in pacchetti caricati solo quando serve
-- Eliminata la dipendenza dal font remoto: avvio più rapido e affidabile offline
-- Nuova schermata di caricamento delle sezioni
-- Gestione degli errori imprevisti con possibilità di ricaricare l’app
-- Collegamento “Vai al contenuto” per navigazione da tastiera
-- Contrasto, focus visibile e supporto a `prefers-reduced-motion`
-- Banner persistente per gli aggiornamenti PWA
-- Service worker aggiornato: la nuova versione viene installata solo dopo la conferma dell’utente
-- Manifest PWA rifinito con identificatore, categorie, orientamento e icone maskable
-- Metadati migliorati per iPhone/iPad e browser con tema chiaro/scuro
+### Luoghi Pokémon
 
-Tutte le funzioni delle Fasi 1–13 restano disponibili: Pokédex, schede Pokémon, Team Builder, Preferiti, Collezione, Calcolatore tipi, Battle Dex, database di mosse, strumenti e abilità, Atlante evolutivo, installazione PWA, cache offline e backup.
+- Ricerca per nome inglese o numero Pokédex
+- Luoghi raggruppati per versione del gioco
+- Metodi d’incontro, livelli, probabilità e condizioni
+- Collegamento diretto dalla scheda di ogni Pokémon
+- Filtri rapidi tra le versioni disponibili
+- Cache offline dei dati già consultati
+
+I luoghi dipendono dalla copertura dell’endpoint incontri di PokéAPI. Doni, eventi, raid, scambi interni e alcune aree recenti possono non essere presenti.
+
+### Capipalestra
+
+- Archivio cronologico dei giochi principali da Rosso/Blu fino a Scarlatto/Violetto
+- Versioni separate quando cambiano i Capipalestra o le squadre
+- Circuiti di Johto e Kanto in Oro/Argento/Cristallo e HeartGold/SoulSilver
+- Modalità Normale e Sfida per Nero 2/Bianco 2
+- Prove e Kahuna di Alola
+- Squadre complete con livelli, abilità, strumenti e Teratipo quando disponibili
+- Collegamenti alle schede dei Pokémon
+- Schede esplicative per i titoli senza Palestre tradizionali, come Leggende Pokémon: Arceus e Leggende Pokémon: Z-A
+
+Le squadre mostrate sono quelle della **prima sfida nella storia principale**. Rivincite, Tornei, DLC e post-game non sono inclusi.
+
+## Funzioni già presenti
+
+Pokédex, schede dettagliate, Team Builder, Preferiti, Collezione, Calcolatore tipi, Battle Dex, database di mosse, strumenti e abilità, Atlante evolutivo, PWA installabile, cache offline, backup, tema chiaro/scuro e impostazioni di accessibilità.
 
 ## Aggiornamento su GitHub
 
 1. Scarica ed estrai lo ZIP.
-2. Apri la cartella `CapsuleDex-Fase-14`.
+2. Apri la cartella `CapsuleDex-Fase-15`.
 3. Nel repository GitHub elimina i vecchi file presenti dentro `assets/`.
 4. Carica **tutto il contenuto interno** della nuova cartella nella radice del repository.
-5. Sostituisci i file esistenti, compresi `index.html`, `manifest.webmanifest` e `sw.js`.
+5. Sostituisci `index.html`, `404.html`, `manifest.webmanifest`, `sw.js` e la cartella `source/`.
 6. Premi **Commit changes**.
-7. Lascia GitHub Pages configurato così:
-   - Source: `Deploy from a branch`
-   - Branch: `main`
-   - Folder: `/(root)`
-8. Attendi alcuni minuti e apri:
+7. Lascia GitHub Pages su branch `main` e cartella `/(root)`.
+8. Apri `https://alexxtomatis.github.io/CapsuleDex/` e premi **Aggiorna** quando compare il banner della nuova versione.
 
-`https://alexxtomatis.github.io/CapsuleDex/`
-
-La prima apertura dopo l’aggiornamento può ancora mostrare la versione precedente. Quando compare **Aggiornamento pronto**, premi **Aggiorna**. I salvataggi locali non vengono cancellati.
-
-## File principali
-
-- `index.html`: release compilata
-- `assets/`: JavaScript suddiviso in moduli, CSS, icone e marchio
-- `sw.js`: service worker della release 1.0
-- `manifest.webmanifest`: configurazione PWA
-- `.nojekyll`: compatibilità con GitHub Pages
-- `source/`: progetto React + TypeScript modificabile
-- `ROADMAP.md`: tutte le fasi completate
-- `CHANGELOG.md`: cronologia delle versioni
-- `RELEASE_CHECKLIST.md`: controlli eseguiti e verifiche consigliate
+Squadre, preferiti e collezione restano memorizzati nel browser.
 
 ## Sviluppo locale
 
@@ -65,17 +53,13 @@ npm install
 npm run dev
 ```
 
-Controllo TypeScript e build:
+Controlli:
 
 ```bash
 npm run lint
 npm run build
 ```
 
-## Salvataggi e privacy
+## Note legali e dati
 
-Squadre, preferiti, collezione e impostazioni restano nel browser tramite `localStorage`. Non vengono inviati a un server e non esiste sincronizzazione automatica tra dispositivi. Prima di cancellare i dati del sito, esporta un backup dalla sezione **Modalità offline**.
-
-## Note legali
-
-CapsuleDex è un progetto fan-made non ufficiale. Dati e immagini vengono caricati tramite PokéAPI e il relativo archivio sprite. Pokémon e i relativi nomi appartengono ai rispettivi titolari.
+CapsuleDex è un progetto fan-made non ufficiale. Dati Pokémon, incontri e immagini vengono caricati tramite PokéAPI e il relativo archivio sprite. L’archivio delle squadre dei Capipalestra è incluso localmente a scopo informativo. Pokémon e i relativi nomi appartengono ai rispettivi titolari.

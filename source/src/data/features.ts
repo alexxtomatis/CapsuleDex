@@ -1,6 +1,6 @@
 import type { Feature, RegionFilter, TypeFilter } from '../types'
 
-export const CURRENT_PHASE = 14
+export const CURRENT_PHASE = 15
 
 export const regions: RegionFilter[] = [
   { id: 'all', label: 'Tutti', min: 1, max: Number.MAX_SAFE_INTEGER },
@@ -43,6 +43,8 @@ export const features: Feature[] = [
   { id: 'moves', title: 'Mosse', subtitle: 'Potenza, tipo e PP', icon: '⚡', accent: 'green', phase: 9 },
   { id: 'abilities', title: 'Abilità', subtitle: 'Effetti e strategie', icon: '✦', accent: 'purple', phase: 11 },
   { id: 'evolutions', title: 'Evoluzioni', subtitle: 'Metodi e alberi completi', icon: '↗', accent: 'cyan', phase: 12 },
+  { id: 'locations', title: 'Luoghi Pokémon', subtitle: 'Aree, livelli e incontri', icon: '⌖', accent: 'blue', phase: 15 },
+  { id: 'gyms', title: 'Capipalestra', subtitle: 'Giochi, medaglie e squadre', icon: '◆', accent: 'orange', phase: 15 },
   { id: 'team', title: 'La mia squadra', subtitle: 'Crea e salva i tuoi team', icon: '◉', accent: 'blue', phase: 4 },
   { id: 'favorites', title: 'Preferiti', subtitle: 'La tua raccolta personale', icon: '♥', accent: 'pink', phase: 5 },
   { id: 'collection', title: 'Collezione', subtitle: 'Catture e forme speciali', icon: '⬡', accent: 'cyan', phase: 6 },

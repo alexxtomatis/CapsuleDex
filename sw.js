@@ -1,5 +1,5 @@
-/* CapsuleDex service worker — Release 1.0 / Fase 14 */
-const VERSION = '14'
+/* CapsuleDex service worker — Release 1.1 / Fase 15 */
+const VERSION = '15'
 const APP_CACHE = `capsuledex-app-v${VERSION}`
 const API_CACHE = `capsuledex-api-v${VERSION}`
 const IMAGE_CACHE = `capsuledex-images-v${VERSION}`

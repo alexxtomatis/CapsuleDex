@@ -63,10 +63,11 @@ type DetailProps = {
   onOpenMove: (moveSlug: string) => void
   onOpenAbility: (abilitySlug: string) => void
   onOpenEvolution: () => void
+  onOpenEncounters: () => void
   onToggleCollectionTrait: (trait: CollectionTrait, name?: string) => void
 }
 
-export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, isInTeam, isTeamFull, onAddToTeam, onOpenTeam, isFavorite, onToggleFavorite, collectionEntry, onAddToCollection, onOpenCollection, onOpenTypeCalculator, onOpenBattle, onOpenMove, onOpenAbility, onOpenEvolution, onToggleCollectionTrait }: DetailProps) {
+export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, isInTeam, isTeamFull, onAddToTeam, onOpenTeam, isFavorite, onToggleFavorite, collectionEntry, onAddToCollection, onOpenCollection, onOpenTypeCalculator, onOpenBattle, onOpenMove, onOpenAbility, onOpenEvolution, onOpenEncounters, onToggleCollectionTrait }: DetailProps) {
   const [pokemon, setPokemon] = useState<PokemonDetailData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -309,6 +310,17 @@ export function PokemonDetailView({ pokemonId, onBack, onOpenPokemon, onToast, i
           <span>
             <strong>Apri l’Atlante evolutivo</strong>
             <small>Esplora tutti i rami e i requisiti di {displayName}</small>
+          </span>
+          <b>→</b>
+        </button>
+      </div>
+
+      <div className="detail-encounter-action">
+        <button type="button" onClick={onOpenEncounters}>
+          <span className="detail-encounter-action__icon" aria-hidden="true">⌖</span>
+          <span>
+            <strong>Trova dove catturarlo</strong>
+            <small>Luoghi, livelli e metodi d’incontro per {displayName}</small>
           </span>
           <b>→</b>
         </button>

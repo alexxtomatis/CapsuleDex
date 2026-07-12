@@ -23,6 +23,8 @@ import type {
   PokemonDetailData,
   PokemonMovePreview,
   PokemonVariant,
+  PokemonEncounterData,
+  EncounterVersionData,
 } from '../types'
 
 const API_BASE = 'https://pokeapi.co/api/v2'
@@ -34,6 +36,7 @@ const abilityDetailCache = new Map<number, AbilityDetailData>()
 const evolutionChainCache = new Map<number, EvolutionChainData>()
 const speciesCache = new Map<number, SpeciesResponse>()
 const typeCache = new Map<string, Set<number>>()
+const encounterCache = new Map<number, PokemonEncounterData>()
 let catalogCache: PokemonCatalogItem[] | null = null
 
 function extractId(url: string): number {
@@ -123,6 +126,87 @@ type SpeciesResponse = {
 
 type TypeResponse = {
   pokemon: Array<{ pokemon: { name: string; url: string } }>
+}
+
+type EncounterResponse = Array<{
+  location_area: { name: string; url: string }
+  version_details: Array<{
+    max_chance: number
+    version: { name: string; url: string }
+    encounter_details: Array<{
+      chance: number
+      min_level: number
+      max_level: number
+      method: { name: string; url: string }
+      condition_values: Array<{ name: string; url: string }>
+    }>
+  }>
+}>
+
+const versionDisplayNames: Record<string, string> = {
+  red: 'Rosso', blue: 'Blu', yellow: 'Giallo',
+  gold: 'Oro', silver: 'Argento', crystal: 'Cristallo',
+  ruby: 'Rubino', sapphire: 'Zaffiro', emerald: 'Smeraldo',
+  firered: 'Rosso Fuoco', leafgreen: 'Verde Foglia',
+  diamond: 'Diamante', pearl: 'Perla', platinum: 'Platino',
+  heartgold: 'Oro HeartGold', soulsilver: 'Argento SoulSilver',
+  black: 'Nero', white: 'Bianco',
+  'black-2': 'Nero 2', 'white-2': 'Bianco 2',
+  x: 'X', y: 'Y',
+  'omega-ruby': 'Rubino Omega', 'alpha-sapphire': 'Zaffiro Alpha',
+  sun: 'Sole', moon: 'Luna', 'ultra-sun': 'Ultrasole', 'ultra-moon': 'Ultraluna',
+  'lets-go-pikachu': 'Let’s Go, Pikachu!', 'lets-go-eevee': 'Let’s Go, Eevee!',
+  sword: 'Spada', shield: 'Scudo',
+  'brilliant-diamond': 'Diamante Lucente', 'shining-pearl': 'Perla Splendente',
+  scarlet: 'Scarlatto', violet: 'Violetto',
+}
+
+const versionOrder = [
+  'red', 'blue', 'yellow', 'gold', 'silver', 'crystal', 'ruby', 'sapphire', 'emerald',
+  'firered', 'leafgreen', 'diamond', 'pearl', 'platinum', 'heartgold', 'soulsilver',
+  'black', 'white', 'black-2', 'white-2', 'x', 'y', 'omega-ruby', 'alpha-sapphire',
+  'sun', 'moon', 'ultra-sun', 'ultra-moon', 'lets-go-pikachu', 'lets-go-eevee',
+  'sword', 'shield', 'brilliant-diamond', 'shining-pearl', 'scarlet', 'violet',
+]
+
+const encounterMethodNames: Record<string, string> = {
+  walk: 'Camminando', 'old-rod': 'Amo Vecchio', 'good-rod': 'Amo Buono',
+  'super-rod': 'Super Amo', surf: 'Surf', 'rock-smash': 'Spaccaroccia',
+  headbutt: 'Bottintesta', 'dark-grass': 'Erba scura', 'grass-spots': 'Chiazze d’erba',
+  'cave-spots': 'Punti nella grotta', 'bridge-spots': 'Ombre sul ponte',
+  'super-rod-spots': 'Punti di pesca', 'surfing': 'Surf', fishing: 'Pesca',
+  gift: 'Dono', 'gift-egg': 'Uovo ricevuto', 'only-one': 'Incontro unico',
+}
+
+const conditionNames: Record<string, string> = {
+  'time-day': 'Di giorno', 'time-morning': 'Di mattina', 'time-night': 'Di notte',
+  'swarm-yes': 'Durante uno sciame', 'swarm-no': 'Senza sciame', 'radar-on': 'Con Poké Radar',
+  'radar-off': 'Senza Poké Radar', 'season-spring': 'Primavera', 'season-summer': 'Estate',
+  'season-autumn': 'Autunno', 'season-winter': 'Inverno', 'story-progress': 'Dopo un evento della storia',
+}
+
+function locationDisplayName(slug: string): string {
+  const cleaned = slug
+    .replace(/-area(?:-[a-z0-9]+)?$/i, '')
+    .replace(/^kanto-/, 'Kanto ')
+    .replace(/^johto-/, 'Johto ')
+    .replace(/^hoenn-/, 'Hoenn ')
+    .replace(/^sinnoh-/, 'Sinnoh ')
+    .replace(/^unova-/, 'Unima ')
+    .replace(/^kalos-/, 'Kalos ')
+    .replace(/^alola-/, 'Alola ')
+    .replace(/^galar-/, 'Galar ')
+  return titleCasePokemonName(cleaned)
+    .replace(/ Route /g, ' Percorso ')
+    .replace(/^Route /, 'Percorso ')
+    .replace(/ Mt /g, ' Monte ')
+    .replace(/^Mt /, 'Monte ')
+}
+
+function encounterConditionName(slug: string): string {
+  if (conditionNames[slug]) return conditionNames[slug]
+  if (slug.startsWith('slot2-')) return `Cartuccia inserita: ${titleCasePokemonName(slug.slice(6))}`
+  return titleCasePokemonName(slug)
 }
 
 type AbilityResponse = {
@@ -554,6 +638,66 @@ export async function getPokemonCards(ids: number[], signal?: AbortSignal): Prom
     throw new Error('Nessun dato Pokémon disponibile')
   }
   return results.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id))
+}
+
+export async function getPokemonEncounters(id: number, signal?: AbortSignal): Promise<PokemonEncounterData> {
+  const cached = encounterCache.get(id)
+  if (cached) return cached
+
+  const payload = await fetchJson<EncounterResponse>(`${API_BASE}/pokemon/${id}/encounters`, signal)
+  const versionMap = new Map<string, EncounterVersionData>()
+  const methods = new Set<string>()
+
+  payload.forEach((area) => {
+    area.version_details.forEach((versionDetail) => {
+      const versionSlug = versionDetail.version.name
+      const version = versionMap.get(versionSlug) ?? {
+        slug: versionSlug,
+        name: versionDisplayNames[versionSlug] ?? titleCasePokemonName(versionSlug),
+        locations: [],
+      }
+
+      const details = versionDetail.encounter_details.map((detail) => {
+        const method = encounterMethodNames[detail.method.name] ?? titleCasePokemonName(detail.method.name)
+        methods.add(method)
+        return {
+          method,
+          minLevel: detail.min_level,
+          maxLevel: detail.max_level,
+          chance: detail.chance,
+          conditions: detail.condition_values.map((condition) => encounterConditionName(condition.name)),
+        }
+      })
+
+      version.locations.push({
+        slug: area.location_area.name,
+        name: locationDisplayName(area.location_area.name),
+        maxChance: versionDetail.max_chance,
+        details,
+      })
+      versionMap.set(versionSlug, version)
+    })
+  })
+
+  const versions = [...versionMap.values()]
+    .map((version) => ({
+      ...version,
+      locations: version.locations.sort((a, b) => a.name.localeCompare(b.name, 'it')),
+    }))
+    .sort((a, b) => {
+      const left = versionOrder.indexOf(a.slug)
+      const right = versionOrder.indexOf(b.slug)
+      return (left < 0 ? 999 : left) - (right < 0 ? 999 : right) || a.name.localeCompare(b.name, 'it')
+    })
+
+  const result: PokemonEncounterData = {
+    pokemonId: id,
+    versions,
+    totalLocations: new Set(payload.map((area) => area.location_area.name)).size,
+    methods: [...methods].sort((a, b) => a.localeCompare(b, 'it')),
+  }
+  encounterCache.set(id, result)
+  return result
 }
 
 export async function getPokemonIdsByType(type: string, signal?: AbortSignal): Promise<Set<number>> {

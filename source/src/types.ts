@@ -272,3 +272,64 @@ export type AbilityDetailData = AbilityIndexItem & {
   pokemon: AbilityPokemonPreview[]
   effectChanges: AbilityEffectChange[]
 }
+
+export type EncounterDetailData = {
+  method: string
+  minLevel: number
+  maxLevel: number
+  chance: number
+  conditions: string[]
+}
+
+export type EncounterLocationData = {
+  slug: string
+  name: string
+  maxChance: number
+  details: EncounterDetailData[]
+}
+
+export type EncounterVersionData = {
+  slug: string
+  name: string
+  locations: EncounterLocationData[]
+}
+
+export type PokemonEncounterData = {
+  pokemonId: number
+  versions: EncounterVersionData[]
+  totalLocations: number
+  methods: string[]
+}
+
+export type GymPokemon = {
+  slug: string
+  displayName: string
+  level: number | null
+  ability?: string
+  heldItem?: string
+  condition?: string
+  teraType?: string
+}
+
+export type GymLeader = {
+  id: string
+  order: number
+  name: string
+  type: string | null
+  circuit: string | null
+  variant: string | null
+  versions: string[] | null
+  team: GymPokemon[]
+}
+
+export type GymGame = {
+  id: string
+  title: string
+  short: string
+  versions: string[]
+  region: string
+  generation: string
+  category: string
+  note: string
+  leaders: GymLeader[]
+}

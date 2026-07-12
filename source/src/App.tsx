@@ -26,6 +26,8 @@ const ItemView = lazy(() => import('./components/ItemView').then((module) => ({ 
 const AbilityView = lazy(() => import('./components/AbilityView').then((module) => ({ default: module.AbilityView })))
 const EvolutionView = lazy(() => import('./components/EvolutionView').then((module) => ({ default: module.EvolutionView })))
 const OfflineView = lazy(() => import('./components/OfflineView').then((module) => ({ default: module.OfflineView })))
+const EncounterView = lazy(() => import('./components/EncounterView').then((module) => ({ default: module.EncounterView })))
+const GymLeaderView = lazy(() => import('./components/GymLeaderView').then((module) => ({ default: module.GymLeaderView })))
 
 function AppLoading() {
   return (
@@ -38,9 +40,10 @@ function AppLoading() {
 
 const phaseLabels: Record<number, string> = {
   14: 'Rifinitura finale',
+  15: 'Luoghi e Capipalestra',
 }
 
-type Screen = 'home' | 'pokedex' | 'detail' | 'team' | 'favorites' | 'collection' | 'types' | 'battle' | 'moves' | 'items' | 'abilities' | 'evolutions' | 'offline'
+type Screen = 'home' | 'pokedex' | 'detail' | 'team' | 'favorites' | 'collection' | 'types' | 'battle' | 'moves' | 'items' | 'abilities' | 'evolutions' | 'offline' | 'encounters' | 'gyms'
 type DetailReturnScreen = Exclude<Screen, 'detail'>
 
 function App() {
@@ -57,6 +60,7 @@ function App() {
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null)
   const [selectedAbilityId, setSelectedAbilityId] = useState<number | null>(null)
   const [selectedEvolutionPokemonId, setSelectedEvolutionPokemonId] = useState<number | null>(null)
+  const [selectedEncounterPokemonId, setSelectedEncounterPokemonId] = useState<number | null>(null)
   const [activeNav, setActiveNav] = useState('home')
   const [toast, setToast] = useState('')
   const [isOnline, setIsOnline] = useState(navigator.onLine)
@@ -230,6 +234,19 @@ function App() {
     goToTop()
   }
 
+  function openEncounters(pokemonId: number | null = null) {
+    setSelectedEncounterPokemonId(pokemonId)
+    setActiveNav('home')
+    setScreen('encounters')
+    goToTop()
+  }
+
+  function openGyms() {
+    setActiveNav('home')
+    setScreen('gyms')
+    goToTop()
+  }
+
   function openPokemon(id: number, returnScreen?: DetailReturnScreen) {
     setSelectedPokemonId(id)
     if (returnScreen) setDetailReturnScreen(returnScreen)
@@ -282,6 +299,14 @@ function App() {
     }
     if (feature.id === 'evolutions') {
       openEvolutions()
+      return
+    }
+    if (feature.id === 'locations') {
+      openEncounters()
+      return
+    }
+    if (feature.id === 'gyms') {
+      openGyms()
       return
     }
     if (feature.id === 'offline') {
@@ -532,7 +557,7 @@ function App() {
                     </p>
                     <h2 id="explore-title">Esplora CapsuleDex</h2>
                   </div>
-                  <span className="progress-chip progress-chip--complete">14 / 14</span>
+                  <span className="progress-chip progress-chip--complete">15 / 15</span>
                 </div>
 
                 <div className="feature-grid">
@@ -548,21 +573,21 @@ function App() {
                   <button type="button" onClick={() => showToast('La roadmap è inclusa nel file ROADMAP.md.')}>Roadmap</button>
                 </div>
                 <article className="highlight-card highlight-card--release">
-                  <div className="highlight-badge">RELEASE 1.0</div>
+                  <div className="highlight-badge">AGGIORNAMENTO 1.1</div>
                   <div>
                     <p>Roadmap completata</p>
-                    <h3>CapsuleDex 1.0</h3>
-                    <span>Tema chiaro e scuro, impostazioni accessibili, caricamento ottimizzato e aggiornamenti PWA più affidabili.</span>
+                    <h3>Luoghi e Capipalestra</h3>
+                    <span>Scopri dove incontrare i Pokémon e consulta le squadre dei Capipalestra per ogni gioco supportato.</span>
                   </div>
                   <div className="completion-ring completion-ring--complete" aria-label="Roadmap completata">
-                    <strong>14/14</strong>
+                    <strong>15/15</strong>
                   </div>
                 </article>
               </section>
 
               <footer className="app-footer">
                 <img src="./assets/capsuledex-mark.svg" alt="" />
-                <p>CapsuleDex 1.0 · Dati PokéAPI · progetto fan-made non ufficiale.</p>
+                <p>CapsuleDex 1.1 · Dati PokéAPI · progetto fan-made non ufficiale.</p>
               </footer>
             </>
           )}
@@ -691,6 +716,32 @@ function App() {
             />
           )}
 
+          {screen === 'encounters' && (
+            <EncounterView
+              initialPokemonId={selectedEncounterPokemonId}
+              onBack={() => {
+                setScreen('home')
+                setActiveNav('home')
+                goToTop()
+              }}
+              onOpenPokemon={(id) => openPokemon(id, 'encounters')}
+              onSelectionChange={setSelectedEncounterPokemonId}
+              onToast={showToast}
+            />
+          )}
+
+          {screen === 'gyms' && (
+            <GymLeaderView
+              onBack={() => {
+                setScreen('home')
+                setActiveNav('home')
+                goToTop()
+              }}
+              onOpenPokemon={(id) => openPokemon(id, 'gyms')}
+              onToast={showToast}
+            />
+          )}
+
           {screen === 'offline' && (
             <OfflineView
               personalPokemonIds={personalPokemonIds}
@@ -760,6 +811,7 @@ function App() {
               onOpenMove={(moveSlug) => openMoves(moveSlug)}
               onOpenAbility={(abilitySlug) => openAbilities(abilitySlug)}
               onOpenEvolution={() => openEvolutions(selectedPokemonId)}
+              onOpenEncounters={() => openEncounters(selectedPokemonId)}
               onToggleCollectionTrait={(trait, name) => toggleCollectionTrait(selectedPokemonId, trait, name)}
             />
           )}

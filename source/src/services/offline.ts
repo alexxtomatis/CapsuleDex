@@ -1,8 +1,8 @@
 const CACHE_PREFIX = 'capsuledex-'
 const API_BASE = 'https://pokeapi.co/api/v2'
 const ARTWORK_BASE = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork'
-const API_CACHE = 'capsuledex-api-v14'
-const IMAGE_CACHE = 'capsuledex-images-v14'
+const API_CACHE = 'capsuledex-api-v15'
+const IMAGE_CACHE = 'capsuledex-images-v15'
 
 export type OfflineStats = {
   cacheEntries: number
@@ -245,6 +245,7 @@ export async function preparePokemonOffline(
       pokemon.sprites?.front_shiny,
       `${ARTWORK_BASE}/${id}.png`,
       `${ARTWORK_BASE}/shiny/${id}.png`,
+      `${API_BASE}/pokemon/${id}/encounters`,
       ...(pokemon.abilities ?? []).map((entry) => entry.ability.url),
     ].filter((value): value is string => Boolean(value))
 
@@ -299,7 +300,7 @@ export function exportLocalBackup() {
 
   const payload = {
     app: 'CapsuleDex',
-    version: 14,
+    version: 15,
     exportedAt: new Date().toISOString(),
     data,
   }
