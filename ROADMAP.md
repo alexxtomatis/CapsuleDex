@@ -13,14 +13,20 @@
   - Artwork e caricamento progressivo
   - Collegamento a PokéAPI
 
-- [ ] **Fase 3 — Scheda Pokémon**
+- [x] **Fase 3 — Scheda Pokémon**
   - Informazioni principali
-  - Statistiche base
-  - Abilità
+  - Artwork normale e shiny
+  - Statistiche base e grafico radar
+  - Abilità e descrizioni
   - Descrizione italiana
-  - Catena evolutiva
+  - Catena evolutiva e requisiti
+  - Varianti e forme alternative
 
 - [ ] **Fase 4 — Team Builder**
+  - Creazione di squadre da 6 Pokémon
+  - Più squadre salvabili
+  - Rinomina e gestione
+
 - [ ] **Fase 5 — Preferiti**
 - [ ] **Fase 6 — Collezione personale**
 - [ ] **Fase 7 — Calcolatore tipi**

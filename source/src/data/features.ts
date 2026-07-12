@@ -1,5 +1,7 @@
 import type { Feature, RegionFilter, TypeFilter } from '../types'
 
+export const CURRENT_PHASE = 3
+
 export const regions: RegionFilter[] = [
   { id: 'all', label: 'Tutti', min: 1, max: Number.MAX_SAFE_INTEGER },
   { id: 'kanto', label: 'Kanto', min: 1, max: 151 },
@@ -36,7 +38,7 @@ export const typeFilters: TypeFilter[] = [
 ]
 
 export const features: Feature[] = [
-  { id: 'pokemon', title: 'Pokémon', subtitle: 'Elenco, ricerca e filtri', icon: '◉', accent: 'pink', phase: 2 },
+  { id: 'pokemon', title: 'Pokémon', subtitle: 'Pokédex e schede complete', icon: '◉', accent: 'pink', phase: 2 },
   { id: 'items', title: 'Strumenti', subtitle: 'Oggetti e bacche', icon: '🎒', accent: 'orange', phase: 10 },
   { id: 'moves', title: 'Mosse', subtitle: 'Potenza, tipo e PP', icon: '⚡', accent: 'green', phase: 9 },
   { id: 'abilities', title: 'Abilità', subtitle: 'Effetti e strategie', icon: '✦', accent: 'purple', phase: 11 },
@@ -63,4 +65,13 @@ export const italianTypeNames: Record<string, string> = {
   dark: 'Buio',
   steel: 'Acciaio',
   fairy: 'Folletto',
+}
+
+export const statLabels: Record<string, string> = {
+  hp: 'PS',
+  attack: 'Attacco',
+  defense: 'Difesa',
+  'special-attack': 'Att. Sp.',
+  'special-defense': 'Dif. Sp.',
+  speed: 'Velocità',
 }

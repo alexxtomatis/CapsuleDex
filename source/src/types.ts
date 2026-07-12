@@ -19,6 +19,53 @@ export type PokemonCardData = PokemonCatalogItem & {
   types: string[]
 }
 
+export type PokemonStat = {
+  id: string
+  label: string
+  value: number
+}
+
+export type PokemonAbility = {
+  id: string
+  name: string
+  description: string
+  hidden: boolean
+}
+
+export type EvolutionStep = {
+  id: number
+  name: string
+  image: string
+  trigger: string | null
+}
+
+export type EvolutionPath = EvolutionStep[]
+
+export type PokemonVariant = {
+  id: number
+  name: string
+  image: string
+  isDefault: boolean
+}
+
+export type PokemonDetailData = PokemonCardData & {
+  italianName: string
+  sprite: string | null
+  shinyImage: string | null
+  heightMetres: number
+  weightKg: number
+  category: string
+  description: string
+  generation: string
+  habitat: string | null
+  baseExperience: number | null
+  stats: PokemonStat[]
+  totalStats: number
+  abilities: PokemonAbility[]
+  evolutionPaths: EvolutionPath[]
+  variants: PokemonVariant[]
+}
+
 export type RegionFilter = {
   id: string
   label: string

@@ -11,6 +11,7 @@ type PokedexViewProps = {
   initialQuery: string
   initialRegion: string
   onBack: () => void
+  onOpenPokemon: (id: number) => void
   onToast: (message: string) => void
 }
 
@@ -18,7 +19,7 @@ function normalize(value: string) {
   return value.trim().toLowerCase().replace(/\s+/g, '-')
 }
 
-export function PokedexView({ initialQuery, initialRegion, onBack, onToast }: PokedexViewProps) {
+export function PokedexView({ initialQuery, initialRegion, onBack, onOpenPokemon, onToast }: PokedexViewProps) {
   const [catalog, setCatalog] = useState<PokemonCatalogItem[]>([])
   const [query, setQuery] = useState(initialQuery)
   const [regionId, setRegionId] = useState(initialRegion)
@@ -138,7 +139,7 @@ export function PokedexView({ initialQuery, initialRegion, onBack, onToast }: Po
   }
 
   function openPokemon(pokemon: PokemonCardData) {
-    onToast(`${pokemon.name}: la scheda completa arriverà nella Fase 3.`)
+    onOpenPokemon(pokemon.id)
   }
 
   const isLoading = catalogLoading || typeLoading

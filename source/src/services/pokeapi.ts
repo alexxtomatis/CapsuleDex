@@ -1,7 +1,19 @@
-import type { PokemonCardData, PokemonCatalogItem } from '../types'
+import { statLabels } from '../data/features'
+import type {
+  EvolutionPath,
+  EvolutionStep,
+  PokemonAbility,
+  PokemonCardData,
+  PokemonCatalogItem,
+  PokemonDetailData,
+  PokemonVariant,
+} from '../types'
 
 const API_BASE = 'https://pokeapi.co/api/v2'
+const OFFICIAL_ARTWORK_BASE = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork'
 const detailCache = new Map<number, PokemonCardData>()
+const fullDetailCache = new Map<number, PokemonDetailData>()
+const abilityCache = new Map<string, PokemonAbility>()
 const typeCache = new Map<string, Set<number>>()
 let catalogCache: PokemonCatalogItem[] | null = null
 
@@ -10,11 +22,26 @@ function extractId(url: string): number {
   return Number(parts.at(-1))
 }
 
+function cleanText(value: string): string {
+  return value.replace(/[\n\f\r]+/g, ' ').replace(/\s+/g, ' ').trim()
+}
+
 function titleCasePokemonName(name: string): string {
   return name
     .split('-')
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ')
+}
+
+function localizedName(
+  names: Array<{ name: string; language: { name: string } }> | undefined,
+  fallback: string,
+): string {
+  return names?.find((entry) => entry.language.name === 'it')?.name ?? titleCasePokemonName(fallback)
+}
+
+function officialArtwork(id: number): string {
+  return `${OFFICIAL_ARTWORK_BASE}/${id}.png`
 }
 
 async function fetchJson<T>(url: string, signal?: AbortSignal): Promise<T> {
@@ -37,18 +64,205 @@ type CatalogResponse = {
 type PokemonResponse = {
   id: number
   name: string
+  height: number
+  weight: number
+  base_experience: number | null
+  species: { name: string; url: string }
   sprites: {
     front_default: string | null
+    front_shiny: string | null
     other?: {
-      ['official-artwork']?: { front_default: string | null }
-      home?: { front_default: string | null }
+      ['official-artwork']?: { front_default: string | null; front_shiny: string | null }
+      home?: { front_default: string | null; front_shiny: string | null }
     }
   }
   types: Array<{ slot: number; type: { name: string } }>
+  stats: Array<{ base_stat: number; stat: { name: string } }>
+  abilities: Array<{ is_hidden: boolean; slot: number; ability: { name: string; url: string } }>
+}
+
+type SpeciesResponse = {
+  id: number
+  name: string
+  names: Array<{ name: string; language: { name: string } }>
+  genera: Array<{ genus: string; language: { name: string } }>
+  flavor_text_entries: Array<{ flavor_text: string; language: { name: string }; version: { name: string } }>
+  generation: { name: string }
+  habitat: { name: string } | null
+  evolution_chain: { url: string } | null
+  varieties: Array<{ is_default: boolean; pokemon: { name: string; url: string } }>
 }
 
 type TypeResponse = {
   pokemon: Array<{ pokemon: { name: string; url: string } }>
+}
+
+type AbilityResponse = {
+  id: number
+  name: string
+  names: Array<{ name: string; language: { name: string } }>
+  flavor_text_entries: Array<{ flavor_text: string; language: { name: string }; version_group: { name: string } }>
+  effect_entries: Array<{
+    short_effect: string
+    effect: string
+    language: { name: string }
+  }>
+}
+
+type EvolutionDetail = {
+  trigger: { name: string }
+  min_level: number | null
+  item: { name: string } | null
+  held_item: { name: string } | null
+  known_move: { name: string } | null
+  known_move_type: { name: string } | null
+  location: { name: string } | null
+  min_happiness: number | null
+  min_affection: number | null
+  time_of_day: string
+  gender: number | null
+  needs_overworld_rain: boolean
+  turn_upside_down: boolean
+  relative_physical_stats: number | null
+  party_species: { name: string } | null
+  party_type: { name: string } | null
+  trade_species: { name: string } | null
+}
+
+type EvolutionChainLink = {
+  species: { name: string; url: string }
+  evolution_details: EvolutionDetail[]
+  evolves_to: EvolutionChainLink[]
+}
+
+type EvolutionChainResponse = {
+  id: number
+  chain: EvolutionChainLink
+}
+
+const triggerNames: Record<string, string> = {
+  'level-up': 'Aumento di livello',
+  trade: 'Scambio',
+  'use-item': 'Uso di uno strumento',
+  shed: 'Condizione speciale',
+  spin: 'Rotazione',
+  'tower-of-darkness': 'Torre Buio',
+  'tower-of-waters': 'Torre Acqua',
+  'three-critical-hits': '3 brutti colpi',
+  'take-damage': 'Danni subiti',
+  other: 'Metodo speciale',
+}
+
+const generationNames: Record<string, string> = {
+  'generation-i': 'Generazione I',
+  'generation-ii': 'Generazione II',
+  'generation-iii': 'Generazione III',
+  'generation-iv': 'Generazione IV',
+  'generation-v': 'Generazione V',
+  'generation-vi': 'Generazione VI',
+  'generation-vii': 'Generazione VII',
+  'generation-viii': 'Generazione VIII',
+  'generation-ix': 'Generazione IX',
+}
+
+const habitatNames: Record<string, string> = {
+  cave: 'Grotte',
+  forest: 'Foreste',
+  grassland: 'Praterie',
+  mountain: 'Montagne',
+  rare: 'Luoghi rari',
+  'rough-terrain': 'Terreni accidentati',
+  sea: 'Mare',
+  urban: 'Zone urbane',
+  'waters-edge': "Riva dell'acqua",
+}
+
+function formatEvolutionDetail(detail: EvolutionDetail): string {
+  const parts: string[] = [triggerNames[detail.trigger.name] ?? titleCasePokemonName(detail.trigger.name)]
+
+  if (detail.min_level !== null) parts.push(`liv. ${detail.min_level}`)
+  if (detail.item) parts.push(titleCasePokemonName(detail.item.name))
+  if (detail.held_item) parts.push(`con ${titleCasePokemonName(detail.held_item.name)}`)
+  if (detail.known_move) parts.push(`con ${titleCasePokemonName(detail.known_move.name)}`)
+  if (detail.known_move_type) parts.push(`mossa ${titleCasePokemonName(detail.known_move_type.name)}`)
+  if (detail.location) parts.push(`a ${titleCasePokemonName(detail.location.name)}`)
+  if (detail.min_happiness !== null) parts.push(`felicità ${detail.min_happiness}+`)
+  if (detail.min_affection !== null) parts.push(`affetto ${detail.min_affection}+`)
+  if (detail.time_of_day) parts.push(detail.time_of_day === 'day' ? 'di giorno' : 'di notte')
+  if (detail.needs_overworld_rain) parts.push('con pioggia')
+  if (detail.turn_upside_down) parts.push('capovolgendo il dispositivo')
+  if (detail.gender === 1) parts.push('femmina')
+  if (detail.gender === 2) parts.push('maschio')
+  if (detail.relative_physical_stats === 1) parts.push('Attacco > Difesa')
+  if (detail.relative_physical_stats === 0) parts.push('Attacco = Difesa')
+  if (detail.relative_physical_stats === -1) parts.push('Attacco < Difesa')
+  if (detail.party_species) parts.push(`${titleCasePokemonName(detail.party_species.name)} in squadra`)
+  if (detail.party_type) parts.push(`tipo ${titleCasePokemonName(detail.party_type.name)} in squadra`)
+  if (detail.trade_species) parts.push(`per ${titleCasePokemonName(detail.trade_species.name)}`)
+
+  return parts.join(' · ')
+}
+
+function evolutionTrigger(details: EvolutionDetail[]): string | null {
+  if (details.length === 0) return null
+  const labels = [...new Set(details.map(formatEvolutionDetail))]
+  return labels.join(' / ')
+}
+
+function buildEvolutionPaths(root: EvolutionChainLink): EvolutionPath[] {
+  const paths: EvolutionPath[] = []
+
+  function visit(node: EvolutionChainLink, path: EvolutionStep[]) {
+    const id = extractId(node.species.url)
+    const step: EvolutionStep = {
+      id,
+      name: titleCasePokemonName(node.species.name),
+      image: officialArtwork(id),
+      trigger: evolutionTrigger(node.evolution_details),
+    }
+    const nextPath = [...path, step]
+
+    if (node.evolves_to.length === 0) {
+      paths.push(nextPath)
+      return
+    }
+
+    node.evolves_to.forEach((child) => visit(child, nextPath))
+  }
+
+  visit(root, [])
+  return paths
+}
+
+async function getAbility(
+  ability: PokemonResponse['abilities'][number],
+  signal?: AbortSignal,
+): Promise<PokemonAbility> {
+  const cached = abilityCache.get(ability.ability.name)
+  if (cached) return { ...cached, hidden: ability.is_hidden }
+
+  try {
+    const payload = await fetchJson<AbilityResponse>(`${API_BASE}/ability/${ability.ability.name}`, signal)
+    const italianFlavor = payload.flavor_text_entries.find((entry) => entry.language.name === 'it')?.flavor_text
+    const englishEffect = payload.effect_entries.find((entry) => entry.language.name === 'en')?.short_effect
+    const englishFlavor = payload.flavor_text_entries.find((entry) => entry.language.name === 'en')?.flavor_text
+    const result: PokemonAbility = {
+      id: ability.ability.name,
+      name: localizedName(payload.names, payload.name),
+      description: cleanText(italianFlavor ?? englishEffect ?? englishFlavor ?? 'Descrizione non disponibile.'),
+      hidden: ability.is_hidden,
+    }
+    abilityCache.set(ability.ability.name, { ...result, hidden: false })
+    return result
+  } catch (error) {
+    if (signal?.aborted) throw error
+    return {
+      id: ability.ability.name,
+      name: titleCasePokemonName(ability.ability.name),
+      description: 'Descrizione non disponibile al momento.',
+      hidden: ability.is_hidden,
+    }
+  }
 }
 
 export async function getPokemonCatalog(signal?: AbortSignal): Promise<PokemonCatalogItem[]> {
@@ -120,4 +334,87 @@ export async function getPokemonIdsByType(type: string, signal?: AbortSignal): P
 
   typeCache.set(type, ids)
   return ids
+}
+
+export async function getPokemonDetail(id: number, signal?: AbortSignal): Promise<PokemonDetailData> {
+  const cached = fullDetailCache.get(id)
+  if (cached) return cached
+
+  const pokemon = await fetchJson<PokemonResponse>(`${API_BASE}/pokemon/${id}`, signal)
+  const speciesId = extractId(pokemon.species.url)
+  const species = await fetchJson<SpeciesResponse>(`${API_BASE}/pokemon-species/${speciesId}`, signal)
+
+  const evolutionPromise = species.evolution_chain
+    ? fetchJson<EvolutionChainResponse>(species.evolution_chain.url, signal)
+        .then((chain) => buildEvolutionPaths(chain.chain))
+        .catch((error: unknown) => {
+          if (signal?.aborted) throw error
+          return [] as EvolutionPath[]
+        })
+    : Promise.resolve([] as EvolutionPath[])
+
+  const [abilities, evolutionPaths] = await Promise.all([
+    Promise.all(pokemon.abilities.sort((a, b) => a.slot - b.slot).map((ability) => getAbility(ability, signal))),
+    evolutionPromise,
+  ])
+
+  const artwork =
+    pokemon.sprites.other?.['official-artwork']?.front_default ??
+    pokemon.sprites.other?.home?.front_default ??
+    pokemon.sprites.front_default
+  const shiny =
+    pokemon.sprites.other?.['official-artwork']?.front_shiny ??
+    pokemon.sprites.other?.home?.front_shiny ??
+    pokemon.sprites.front_shiny
+
+  const description =
+    species.flavor_text_entries.find((entry) => entry.language.name === 'it')?.flavor_text ??
+    species.flavor_text_entries.find((entry) => entry.language.name === 'en')?.flavor_text ??
+    'Descrizione non disponibile.'
+  const category =
+    species.genera.find((entry) => entry.language.name === 'it')?.genus ??
+    species.genera.find((entry) => entry.language.name === 'en')?.genus ??
+    'Pokémon'
+
+  const variants: PokemonVariant[] = species.varieties.map((variety) => {
+    const variantId = extractId(variety.pokemon.url)
+    return {
+      id: variantId,
+      name: titleCasePokemonName(variety.pokemon.name),
+      image: officialArtwork(variantId),
+      isDefault: variety.is_default,
+    }
+  })
+
+  const stats = pokemon.stats.map((entry) => ({
+    id: entry.stat.name,
+    label: statLabels[entry.stat.name] ?? titleCasePokemonName(entry.stat.name),
+    value: entry.base_stat,
+  }))
+
+  const detail: PokemonDetailData = {
+    id: pokemon.id,
+    name: titleCasePokemonName(pokemon.name),
+    italianName: localizedName(species.names, pokemon.name),
+    image: artwork,
+    sprite: pokemon.sprites.front_default,
+    shinyImage: shiny,
+    types: pokemon.types.sort((a, b) => a.slot - b.slot).map((entry) => entry.type.name),
+    heightMetres: pokemon.height / 10,
+    weightKg: pokemon.weight / 10,
+    category: category.replace(/^Pokémon\s*/i, '').trim() || category,
+    description: cleanText(description),
+    generation: generationNames[species.generation.name] ?? titleCasePokemonName(species.generation.name),
+    habitat: species.habitat ? habitatNames[species.habitat.name] ?? titleCasePokemonName(species.habitat.name) : null,
+    baseExperience: pokemon.base_experience,
+    stats,
+    totalStats: stats.reduce((sum, stat) => sum + stat.value, 0),
+    abilities,
+    evolutionPaths,
+    variants,
+  }
+
+  fullDetailCache.set(id, detail)
+  detailCache.set(id, { id: detail.id, name: detail.italianName, image: detail.image, types: detail.types })
+  return detail
 }

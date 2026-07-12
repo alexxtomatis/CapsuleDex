@@ -4,12 +4,12 @@ import { BottomNav } from './components/BottomNav'
 import { FeatureCard } from './components/FeatureCard'
 import { SearchIcon } from './components/Icon'
 import { PokedexView } from './components/PokedexView'
+import { PokemonDetailView } from './components/PokemonDetailView'
 import { Toast } from './components/Toast'
 import { features, regions } from './data/features'
 import type { Feature } from './types'
 
 const phaseLabels: Record<number, string> = {
-  3: 'Scheda Pokémon',
   4: 'Team Builder',
   6: 'Collezione e zone',
   9: 'Database mosse',
@@ -17,7 +17,7 @@ const phaseLabels: Record<number, string> = {
   11: 'Database abilità',
 }
 
-type Screen = 'home' | 'pokedex'
+type Screen = 'home' | 'pokedex' | 'detail'
 
 function App() {
   const [screen, setScreen] = useState<Screen>('home')
@@ -25,6 +25,7 @@ function App() {
   const [query, setQuery] = useState('')
   const [pokedexQuery, setPokedexQuery] = useState('')
   const [pokedexRegion, setPokedexRegion] = useState('all')
+  const [selectedPokemonId, setSelectedPokemonId] = useState(6)
   const [activeNav, setActiveNav] = useState('home')
   const [toast, setToast] = useState('')
   const toastTimer = useRef<number | null>(null)
@@ -39,6 +40,12 @@ function App() {
     setPokedexQuery(search)
     setPokedexRegion(region)
     setScreen('pokedex')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  function openPokemon(id: number) {
+    setSelectedPokemonId(id)
+    setScreen('detail')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -70,12 +77,12 @@ function App() {
 
   return (
     <div className="page-shell">
-      <main className={`app-frame${screen === 'pokedex' ? ' app-frame--pokedex' : ''}`}>
+      <main className={`app-frame app-frame--${screen}`}>
         <div className="ambient ambient--one" />
         <div className="ambient ambient--two" />
 
         <div className="content">
-          {screen === 'home' ? (
+          {screen === 'home' && (
             <>
               <AppHeader onNotify={() => showToast('Nessuna nuova notifica.')} />
 
@@ -111,7 +118,7 @@ function App() {
                 <span className="hero-copy">
                   <span className="hero-kicker">Pokédex nazionale</span>
                   <strong>Scopri ogni Pokémon</strong>
-                  <span>Ricerca, regioni, tipi e artwork</span>
+                  <span>Schede, statistiche ed evoluzioni</span>
                   <span className="hero-action">Apri Pokédex <b>→</b></span>
                 </span>
                 <span className="capsule-orb" aria-hidden="true"><i /></span>
@@ -125,7 +132,7 @@ function App() {
                     </p>
                     <h2 id="explore-title">Esplora CapsuleDex</h2>
                   </div>
-                  <span className="progress-chip">2 / 14</span>
+                  <span className="progress-chip">3 / 14</span>
                 </div>
 
                 <div className="feature-grid">
@@ -141,14 +148,14 @@ function App() {
                   <button type="button" onClick={() => showToast('La roadmap è inclusa nel file ROADMAP.md.')}>Roadmap</button>
                 </div>
                 <article className="highlight-card">
-                  <div className="highlight-badge">FASE 2</div>
+                  <div className="highlight-badge">FASE 3</div>
                   <div>
                     <p>Nuova funzione disponibile</p>
-                    <h3>Il Pokédex è online</h3>
-                    <span>Cerca per nome o numero, filtra per regione e tipo, poi carica progressivamente l’elenco.</span>
+                    <h3>Schede Pokémon complete</h3>
+                    <span>Apri un Pokémon per vedere descrizione, abilità, statistiche, shiny, varianti e catena evolutiva.</span>
                   </div>
-                  <div className="completion-ring completion-ring--phase-two" aria-label="Fase 2 completata">
-                    <strong>2/14</strong>
+                  <div className="completion-ring completion-ring--phase-three" aria-label="Fase 3 completata">
+                    <strong>3/14</strong>
                   </div>
                 </article>
               </section>
@@ -158,7 +165,9 @@ function App() {
                 <p>Dati PokéAPI · progetto fan-made non ufficiale.</p>
               </footer>
             </>
-          ) : (
+          )}
+
+          {screen === 'pokedex' && (
             <PokedexView
               initialQuery={pokedexQuery}
               initialRegion={pokedexRegion}
@@ -166,12 +175,25 @@ function App() {
                 setScreen('home')
                 window.scrollTo({ top: 0, behavior: 'smooth' })
               }}
+              onOpenPokemon={openPokemon}
+              onToast={showToast}
+            />
+          )}
+
+          {screen === 'detail' && (
+            <PokemonDetailView
+              pokemonId={selectedPokemonId}
+              onBack={() => {
+                setScreen('pokedex')
+                window.scrollTo({ top: 0, behavior: 'smooth' })
+              }}
+              onOpenPokemon={openPokemon}
               onToast={showToast}
             />
           )}
         </div>
 
-        <BottomNav active={activeNav} onSelect={selectNav} />
+        {screen !== 'detail' && <BottomNav active={activeNav} onSelect={selectNav} />}
         <Toast message={toast} visible={Boolean(toast)} />
       </main>
     </div>

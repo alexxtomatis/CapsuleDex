@@ -1,3 +1,4 @@
+import { CURRENT_PHASE } from '../data/features'
 import type { Feature } from '../types'
 
 type FeatureCardProps = {
@@ -6,7 +7,7 @@ type FeatureCardProps = {
 }
 
 export function FeatureCard({ feature, onOpen }: FeatureCardProps) {
-  const ready = feature.phase <= 2
+  const ready = feature.phase <= CURRENT_PHASE
   return (
     <button
       type="button"

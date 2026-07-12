@@ -100,3 +100,40 @@ export function MoreIcon() {
     </svg>
   )
 }
+
+export function StarIcon({ filled = false }: { filled?: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path className={filled ? 'fill' : undefined} d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z" />
+    </svg>
+  )
+}
+
+export function InfoIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 11v5" />
+      <path d="M12 8h.01" />
+    </svg>
+  )
+}
+
+export function ChartIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M5 19V9M12 19V5M19 19v-7" />
+    </svg>
+  )
+}
+
+export function EvolutionIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="6" cy="12" r="2.5" />
+      <circle cx="18" cy="6" r="2.5" />
+      <circle cx="18" cy="18" r="2.5" />
+      <path d="M8.5 11c3.5 0 4-5 7-5M8.5 13c3.5 0 4 5 7 5" />
+    </svg>
+  )
+}
