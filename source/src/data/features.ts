@@ -1,6 +1,6 @@
 import type { Feature, RegionFilter, TypeFilter } from '../types'
 
-export const CURRENT_PHASE = 13
+export const CURRENT_PHASE = 14
 
 export const regions: RegionFilter[] = [
   { id: 'all', label: 'Tutti', min: 1, max: Number.MAX_SAFE_INTEGER },

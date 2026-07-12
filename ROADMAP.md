@@ -1,88 +1,54 @@
 # Roadmap CapsuleDex
 
 - [x] **Fase 1 — Fondamenta**
-  - Identità grafica
-  - Home responsive
-  - Struttura React e TypeScript
-  - Pubblicazione GitHub Pages
+  - Identità grafica, Home responsive, React + TypeScript e GitHub Pages
 
 - [x] **Fase 2 — Pokédex**
-  - Elenco Pokémon
-  - Ricerca per nome e numero
-  - Filtri per regione e tipo
-  - Artwork e caricamento progressivo
-  - Collegamento a PokéAPI
+  - Elenco, ricerca, filtri, artwork e PokéAPI
 
 - [x] **Fase 3 — Scheda Pokémon**
-  - Informazioni principali
-  - Artwork normale e shiny
-  - Statistiche base e grafico radar
-  - Abilità e descrizioni
-  - Catena evolutiva e requisiti
-  - Varianti e forme alternative
+  - Informazioni, shiny, statistiche, abilità, evoluzioni e varianti
 
 - [x] **Fase 4 — Team Builder**
-  - Squadre da un massimo di 6 Pokémon
-  - Ricerca, aggiunta e rimozione
-  - Più squadre salvabili
-  - Rinomina, eliminazione e salvataggio locale
+  - Più squadre da 6 Pokémon con salvataggio locale
 
 - [x] **Fase 5 — Preferiti**
-  - Aggiunta e rimozione dal Pokédex e dalle schede
-  - Schermata personale dedicata
-  - Ricerca, ordinamento e salvataggio locale
+  - Gestione, ricerca e ordinamento dei preferiti
 
 - [x] **Fase 6 — Collezione personale**
-  - Registrazione dei Pokémon catturati
-  - Categorie Shiny, Alpha, Gigamax, Paradox e Leggendario
-  - Riepilogo, ricerca, filtri e ordinamento
+  - Catture e categorie Shiny, Alpha, Gigamax, Paradox e Leggendario
 
 - [x] **Fase 7 — Calcolatore tipi**
-  - Debolezze, resistenze e immunità
-  - Analisi Pokémon e selezione manuale dei tipi
-  - Matrice completa dei 18 tipi
+  - Debolezze, resistenze, immunità e matrice dei 18 tipi
 
 - [x] **Fase 8 — Battle Dex**
-  - Confronto di statistiche, BST, tipi, abilità e mosse
-  - Collegamento diretto dalle schede Pokémon
+  - Confronto tra due Pokémon
 
 - [x] **Fase 9 — Database mosse**
-  - Archivio con nomi italiani e inglesi
-  - Ricerca, filtri e ordinamento
-  - Effetti avanzati e Pokémon compatibili
-  - Collegamento diretto dalle schede Pokémon
+  - Ricerca, filtri, effetti e Pokémon compatibili
 
 - [x] **Fase 10 — Database strumenti**
-  - Archivio locale di oltre 2.200 strumenti
-  - Ricerca, filtri e ordinamento
-  - Schede con effetti, proprietà e Pokémon possessori
-  - Collegamento delle MT al Database mosse
+  - Oltre 2.200 strumenti, dettagli e collegamenti alle mosse
 
 - [x] **Fase 11 — Database abilità**
-  - Archivio locale con nomi italiani e inglesi
-  - Ricerca, filtri e ordinamento
-  - Schede con descrizioni, effetti e modifiche storiche
-  - Pokémon associati e abilità nascoste
+  - Effetti, modifiche storiche e Pokémon associati
 
 - [x] **Fase 12 — Evoluzioni avanzate**
-  - Atlante evolutivo ricercabile
-  - Alberi completi e ramificazioni
-  - Requisiti avanzati e collegamenti alle altre sezioni
-  - Storico locale e copia del riepilogo
+  - Atlante evolutivo, alberi completi e requisiti avanzati
 
 - [x] **Fase 13 — Modalità offline**
-  - Service worker e app shell offline
-  - Cache automatica di dati PokéAPI e immagini
-  - Download di ricerca, filtri e Pokémon personali
-  - Indicatore di connessione e statistiche della cache
-  - Installazione PWA
-  - Backup e ripristino dei salvataggi
-  - Pulizia selettiva della cache
+  - PWA, cache, download dati, backup e ripristino
 
-- [ ] **Fase 14 — Rifinitura e pubblicazione**
-  - Revisione completa dell’interfaccia
-  - Accessibilità e prestazioni
-  - Animazioni e transizioni finali
-  - Gestione aggiornamenti e cache definitiva
-  - Test multipiattaforma
-  - Documentazione e rilascio 1.0
+- [x] **Fase 14 — Rifinitura e pubblicazione**
+  - Tema automatico, chiaro e scuro
+  - Pannello impostazioni e layout compatto
+  - Riduzione delle animazioni e accessibilità da tastiera
+  - Suddivisione del codice e caricamento differito delle sezioni
+  - Rimozione del font remoto e miglioramento dell’avvio offline
+  - Gestione degli errori e degli aggiornamenti PWA
+  - Manifest e metadati finali
+  - Documentazione e release **CapsuleDex 1.0.0**
+
+## Stato finale
+
+**14 fasi su 14 completate — CapsuleDex 1.0.0**

@@ -1,5 +1,5 @@
-/* CapsuleDex service worker — Fase 13 */
-const VERSION = '13'
+/* CapsuleDex service worker — Release 1.0 / Fase 14 */
+const VERSION = '14'
 const APP_CACHE = `capsuledex-app-v${VERSION}`
 const API_CACHE = `capsuledex-api-v${VERSION}`
 const IMAGE_CACHE = `capsuledex-images-v${VERSION}`
@@ -119,7 +119,6 @@ async function staleWhileRevalidate(request, cacheName, maximum) {
 self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
     await precacheAppShell()
-    await self.skipWaiting()
   })())
 })
 
@@ -151,7 +150,7 @@ self.addEventListener('fetch', (event) => {
   if (isNavigation) {
     event.respondWith((async () => {
       try {
-        const response = await fetch(request)
+        const response = await fetch(request, { cache: 'no-cache' })
         void putSafe(APP_CACHE, scoped('index.html'), response)
         return response
       } catch {

@@ -1,10 +1,11 @@
-import { BellIcon, IconButton } from './Icon'
+import { BellIcon, IconButton, SettingsIcon } from './Icon'
 
 type AppHeaderProps = {
   onNotify: () => void
+  onOpenSettings: () => void
 }
 
-export function AppHeader({ onNotify }: AppHeaderProps) {
+export function AppHeader({ onNotify, onOpenSettings }: AppHeaderProps) {
   return (
     <header className="app-header">
       <div className="brand-heading">
@@ -19,7 +20,9 @@ export function AppHeader({ onNotify }: AppHeaderProps) {
         <IconButton label="Notifiche" onClick={onNotify}>
           <BellIcon />
         </IconButton>
-        <img className="avatar" src="./assets/icon-192.png" alt="Profilo allenatore" />
+        <IconButton label="Apri impostazioni" onClick={onOpenSettings}>
+          <SettingsIcon />
+        </IconButton>
       </div>
     </header>
   )

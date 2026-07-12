@@ -1,8 +1,8 @@
 const CACHE_PREFIX = 'capsuledex-'
 const API_BASE = 'https://pokeapi.co/api/v2'
 const ARTWORK_BASE = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork'
-const API_CACHE = 'capsuledex-api-v13'
-const IMAGE_CACHE = 'capsuledex-images-v13'
+const API_CACHE = 'capsuledex-api-v14'
+const IMAGE_CACHE = 'capsuledex-images-v14'
 
 export type OfflineStats = {
   cacheEntries: number
@@ -299,7 +299,7 @@ export function exportLocalBackup() {
 
   const payload = {
     app: 'CapsuleDex',
-    version: 13,
+    version: 14,
     exportedAt: new Date().toISOString(),
     data,
   }

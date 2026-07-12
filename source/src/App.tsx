@@ -1,29 +1,40 @@
-import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { AbilityView } from './components/AbilityView'
+import { FormEvent, Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AppHeader } from './components/AppHeader'
 import { BottomNav } from './components/BottomNav'
-import { BattleView } from './components/BattleView'
-import { CollectionView } from './components/CollectionView'
-import { FavoritesView } from './components/FavoritesView'
-import { EvolutionView } from './components/EvolutionView'
-import { ItemView } from './components/ItemView'
 import { FeatureCard } from './components/FeatureCard'
 import { SearchIcon } from './components/Icon'
-import { PokedexView } from './components/PokedexView'
-import { MoveView } from './components/MoveView'
-import { OfflineView } from './components/OfflineView'
-import { PokemonDetailView } from './components/PokemonDetailView'
-import { TeamView } from './components/TeamView'
-import { TypeCalculatorView } from './components/TypeCalculatorView'
+import { SettingsPanel } from './components/SettingsPanel'
 import { Toast } from './components/Toast'
 import { features, regions } from './data/features'
-import { abilityBySlug } from './data/abilityIndex'
-import { itemBySlug } from './data/itemIndex'
-import { moveBySlug } from './data/moveIndex'
 import { loadCollection, saveCollection } from './services/collectionStorage'
 import { loadFavorites, saveFavorites } from './services/favoriteStorage'
 import { createTeamId, loadActiveTeamId, loadTeams, saveActiveTeamId, saveTeams } from './services/teamStorage'
+import { activateWaitingServiceWorker } from './services/offline'
+import { applyPreferences, loadPreferences, savePreferences } from './services/preferences'
+import type { AppPreferences } from './services/preferences'
 import type { CollectionEntry, CollectionTrait, FavoriteEntry, Feature, PokemonTeam } from './types'
+
+const PokedexView = lazy(() => import('./components/PokedexView').then((module) => ({ default: module.PokedexView })))
+const PokemonDetailView = lazy(() => import('./components/PokemonDetailView').then((module) => ({ default: module.PokemonDetailView })))
+const TeamView = lazy(() => import('./components/TeamView').then((module) => ({ default: module.TeamView })))
+const FavoritesView = lazy(() => import('./components/FavoritesView').then((module) => ({ default: module.FavoritesView })))
+const CollectionView = lazy(() => import('./components/CollectionView').then((module) => ({ default: module.CollectionView })))
+const TypeCalculatorView = lazy(() => import('./components/TypeCalculatorView').then((module) => ({ default: module.TypeCalculatorView })))
+const BattleView = lazy(() => import('./components/BattleView').then((module) => ({ default: module.BattleView })))
+const MoveView = lazy(() => import('./components/MoveView').then((module) => ({ default: module.MoveView })))
+const ItemView = lazy(() => import('./components/ItemView').then((module) => ({ default: module.ItemView })))
+const AbilityView = lazy(() => import('./components/AbilityView').then((module) => ({ default: module.AbilityView })))
+const EvolutionView = lazy(() => import('./components/EvolutionView').then((module) => ({ default: module.EvolutionView })))
+const OfflineView = lazy(() => import('./components/OfflineView').then((module) => ({ default: module.OfflineView })))
+
+function AppLoading() {
+  return (
+    <div className="app-loading" role="status" aria-live="polite">
+      <img src="./assets/capsuledex-mark.svg" alt="" />
+      <span>Caricamento sezione…</span>
+    </div>
+  )
+}
 
 const phaseLabels: Record<number, string> = {
   14: 'Rifinitura finale',
@@ -49,6 +60,9 @@ function App() {
   const [activeNav, setActiveNav] = useState('home')
   const [toast, setToast] = useState('')
   const [isOnline, setIsOnline] = useState(navigator.onLine)
+  const [preferences, setPreferences] = useState<AppPreferences>(() => loadPreferences())
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [updateReady, setUpdateReady] = useState(false)
   const toastTimer = useRef<number | null>(null)
 
   const [collection, setCollection] = useState<CollectionEntry[]>(() => loadCollection())
@@ -60,6 +74,17 @@ function App() {
   useEffect(() => saveFavorites(favorites), [favorites])
   useEffect(() => saveTeams(teams), [teams])
   useEffect(() => saveActiveTeamId(activeTeamId), [activeTeamId])
+
+  useEffect(() => {
+    savePreferences(preferences)
+    applyPreferences(preferences)
+
+    if (preferences.theme !== 'system') return undefined
+    const media = window.matchMedia('(prefers-color-scheme: light)')
+    const updateSystemTheme = () => applyPreferences(preferences)
+    media.addEventListener('change', updateSystemTheme)
+    return () => media.removeEventListener('change', updateSystemTheme)
+  }, [preferences])
 
   const collectionMap = useMemo(() => new Map(collection.map((entry) => [entry.pokemonId, entry])), [collection])
   const collectionIds = useMemo(() => new Set(collection.map((entry) => entry.pokemonId)), [collection])
@@ -91,7 +116,10 @@ function App() {
       setIsOnline(false)
       showToast('Modalità offline attiva: userò i dati già salvati.')
     }
-    const handleUpdate = () => showToast('È disponibile un aggiornamento di CapsuleDex: ricarica la pagina.')
+    const handleUpdate = () => {
+      setUpdateReady(true)
+      showToast('È disponibile un aggiornamento di CapsuleDex.')
+    }
     window.addEventListener('online', handleOnline)
     window.addEventListener('offline', handleOffline)
     window.addEventListener('capsuledex:update-ready', handleUpdate)
@@ -104,7 +132,19 @@ function App() {
 
 
   function goToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.scrollTo({ top: 0, behavior: preferences.reduceMotion ? 'auto' : 'smooth' })
+  }
+
+  async function applyUpdate() {
+    let reloaded = false
+    const reload = () => {
+      if (reloaded) return
+      reloaded = true
+      window.location.reload()
+    }
+    navigator.serviceWorker?.addEventListener('controllerchange', reload, { once: true })
+    const activated = await activateWaitingServiceWorker()
+    if (!activated) reload()
   }
 
   function openPokedex(search = '', region = 'all') {
@@ -140,16 +180,20 @@ function App() {
     goToTop()
   }
 
-  function openItems(itemKey: number | string | null = null) {
-    const itemId = typeof itemKey === 'string' ? itemBySlug.get(itemKey)?.id ?? null : itemKey
+  async function openItems(itemKey: number | string | null = null) {
+    const itemId = typeof itemKey === 'string'
+      ? (await import('./data/itemIndex')).itemBySlug.get(itemKey)?.id ?? null
+      : itemKey
     setSelectedItemId(itemId)
     setActiveNav('home')
     setScreen('items')
     goToTop()
   }
 
-  function openMoves(moveKey: number | string | null = null) {
-    const moveId = typeof moveKey === 'string' ? moveBySlug.get(moveKey)?.id ?? null : moveKey
+  async function openMoves(moveKey: number | string | null = null) {
+    const moveId = typeof moveKey === 'string'
+      ? (await import('./data/moveIndex')).moveBySlug.get(moveKey)?.id ?? null
+      : moveKey
     setSelectedMoveId(moveId)
     setActiveNav('home')
     setScreen('moves')
@@ -163,8 +207,10 @@ function App() {
     goToTop()
   }
 
-  function openAbilities(abilityKey: number | string | null = null) {
-    const abilityId = typeof abilityKey === 'string' ? abilityBySlug.get(abilityKey)?.id ?? null : abilityKey
+  async function openAbilities(abilityKey: number | string | null = null) {
+    const abilityId = typeof abilityKey === 'string'
+      ? (await import('./data/abilityIndex')).abilityBySlug.get(abilityKey)?.id ?? null
+      : abilityKey
     setSelectedAbilityId(abilityId)
     setActiveNav('home')
     setScreen('abilities')
@@ -414,19 +460,31 @@ function App() {
 
   return (
     <div className="page-shell">
-      <main className={`app-frame app-frame--${screen}`}>
+      <a className="skip-link" href="#main-content">Vai al contenuto</a>
+      <main id="main-content" className={`app-frame app-frame--${screen}`}>
         <div className="ambient ambient--one" />
         <div className="ambient ambient--two" />
 
-        <div className="content">
+        <div className="content screen-enter" key={screen}>
+          {updateReady && (
+            <div className="update-banner" role="status">
+              <span>✦</span>
+              <div><strong>Aggiornamento pronto</strong><small>Installa la versione più recente senza perdere i salvataggi.</small></div>
+              <button type="button" onClick={applyUpdate}>Aggiorna</button>
+            </div>
+          )}
           {!isOnline && screen !== 'offline' && (
             <button type="button" className="global-offline-banner" onClick={openOffline}>
               <span>⌁</span> Modalità offline attiva · Apri gestione offline
             </button>
           )}
+          <Suspense fallback={<AppLoading />}>
           {screen === 'home' && (
             <>
-              <AppHeader onNotify={() => showToast('Nessuna nuova notifica.')} />
+              <AppHeader
+                onNotify={() => showToast('Nessuna nuova notifica.')}
+                onOpenSettings={() => setSettingsOpen(true)}
+              />
 
               <form className="search-bar" onSubmit={handleSearch}>
                 <SearchIcon />
@@ -474,7 +532,7 @@ function App() {
                     </p>
                     <h2 id="explore-title">Esplora CapsuleDex</h2>
                   </div>
-                  <span className="progress-chip">13 / 14</span>
+                  <span className="progress-chip progress-chip--complete">14 / 14</span>
                 </div>
 
                 <div className="feature-grid">
@@ -489,22 +547,22 @@ function App() {
                   <h2 id="highlight-title">In evidenza</h2>
                   <button type="button" onClick={() => showToast('La roadmap è inclusa nel file ROADMAP.md.')}>Roadmap</button>
                 </div>
-                <article className="highlight-card highlight-card--offline">
-                  <div className="highlight-badge">FASE 13</div>
+                <article className="highlight-card highlight-card--release">
+                  <div className="highlight-badge">RELEASE 1.0</div>
                   <div>
-                    <p>Nuova funzione disponibile</p>
-                    <h3>Modalità offline</h3>
-                    <span>Installa l’app, conserva i dati consultati, prepara i tuoi Pokémon e proteggi i salvataggi con backup locali.</span>
+                    <p>Roadmap completata</p>
+                    <h3>CapsuleDex 1.0</h3>
+                    <span>Tema chiaro e scuro, impostazioni accessibili, caricamento ottimizzato e aggiornamenti PWA più affidabili.</span>
                   </div>
-                  <div className="completion-ring completion-ring--phase-thirteen" aria-label="Fase 13 completata">
-                    <strong>13/14</strong>
+                  <div className="completion-ring completion-ring--complete" aria-label="Roadmap completata">
+                    <strong>14/14</strong>
                   </div>
                 </article>
               </section>
 
               <footer className="app-footer">
                 <img src="./assets/capsuledex-mark.svg" alt="" />
-                <p>Dati PokéAPI · progetto fan-made non ufficiale.</p>
+                <p>CapsuleDex 1.0 · Dati PokéAPI · progetto fan-made non ufficiale.</p>
               </footer>
             </>
           )}
@@ -705,10 +763,19 @@ function App() {
               onToggleCollectionTrait={(trait, name) => toggleCollectionTrait(selectedPokemonId, trait, name)}
             />
           )}
+          </Suspense>
         </div>
 
         {screen !== 'detail' && <BottomNav active={activeNav} onSelect={selectNav} />}
         <Toast message={toast} visible={Boolean(toast)} />
+        <SettingsPanel
+          open={settingsOpen}
+          preferences={preferences}
+          onChange={setPreferences}
+          onClose={() => setSettingsOpen(false)}
+          onOpenOffline={openOffline}
+          onToast={showToast}
+        />
       </main>
     </div>
   )

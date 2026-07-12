@@ -164,7 +164,7 @@ export function OfflineView({ personalPokemonIds, onBack, onToast }: OfflineView
           <ArrowLeftIcon />
         </IconButton>
         <div>
-          <p className="eyebrow">Fase 13</p>
+          <p className="eyebrow">CapsuleDex 1.0</p>
           <h1>Modalità offline</h1>
         </div>
         <span className={`network-dot ${online ? 'is-online' : 'is-offline'}`} title={online ? 'Online' : 'Offline'} />
